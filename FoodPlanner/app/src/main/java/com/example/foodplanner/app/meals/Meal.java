@@ -1,11 +1,9 @@
 package com.example.foodplanner.app.meals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Meal {
-    private List<MealsDTO> meals;
-
-    public static class MealsDTO {
         private String idMeal;
         private String strMeal;
 //        private Object strDrinkAlternate;
@@ -475,5 +473,11 @@ public class Meal {
         public void setDateModified(Object dateModified) {
             this.dateModified = dateModified;
         }
+
+        private List<Meal> meals;
+
+        public List<Meal> getProducts() {
+            return meals != null ? meals : new ArrayList<>(); // Return an empty list if null
+        }
     }
-}
+

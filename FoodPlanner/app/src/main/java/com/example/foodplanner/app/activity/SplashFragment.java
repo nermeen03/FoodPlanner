@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +18,18 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.ApiCalling;
+import com.example.foodplanner.app.meals.CardAdapter;
+import com.example.foodplanner.app.meals.Meal;
 
-public class SplashFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SplashFragment extends Fragment implements ApiCalling.NetworkCallback {
     private ImageView boyImage, foodImage;
+    private CardAdapter mealAdapter;
+
+    private List<Meal> productList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -85,10 +96,25 @@ public class SplashFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ApiCalling.getInstance().makeNetworkCall(this);
 
-        // After 8 seconds, navigate to the home fragment
         new Handler().postDelayed(() -> {
             Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
-        }, 1000); // Delay of 8 seconds
+        }, 5000); // Delay of 5 seconds
+    }
+    @Override
+    public void onSuccessResult(List<Meal> products) {
+        if (products != null) {
+            productList.addAll(products);
+            if (mealAdapter != null) {
+                mealAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+
+    @Override
+    public void onFailureResult(String errorMsg) {
+        Toast.makeText(getContext(), "Error: " + errorMsg, Toast.LENGTH_SHORT).show();
     }
 }
