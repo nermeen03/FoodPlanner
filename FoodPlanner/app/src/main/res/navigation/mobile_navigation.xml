@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.foodplanner.SplashFragment"
+        android:name="com.example.foodplanner.app.activity.SplashFragment"
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
@@ -18,7 +18,7 @@
     <!-- Main Fragment -->
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.foodplanner.MainFragment"
+        android:name="com.example.foodplanner.app.register.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/fragment_main" >
         <action
@@ -31,29 +31,26 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.foodplanner.ui.home.HomeFragment"
+        android:name="com.example.foodplanner.app.controller.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.foodplanner.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.foodplanner.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-    <fragment
         android:id="@+id/signInFragment"
-        android:name="com.example.foodplanner.register.SignInFragment"
+        android:name="com.example.foodplanner.app.register.SignInFragment"
         android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" />
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.foodplanner.register.SignUpFragment"
+        android:name="com.example.foodplanner.app.register.SignUpFragment"
         android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" />
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 </navigation>

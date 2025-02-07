@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background8"
-    tools:context=".MainFragment">
+    android:background="@drawable/background"
+    tools:context=".app.register.MainFragment">
 
     <!-- Horizontal Guideline -->
     <androidx.constraintlayout.widget.Guideline
@@ -87,7 +87,7 @@
         android:layout_height="61dp"
         android:layout_marginStart="140dp"
         android:layout_marginTop="130dp"
-        android:src="@drawable/facebook2"
+        android:src="@drawable/facebook"
         android:padding = "15dp"
         android:background="@color/primary"
         app:layout_constraintStart_toEndOf="@+id/imageView5"

@@ -1,4 +1,4 @@
-package com.example.foodplanner.register;
+package com.example.foodplanner.app.register;
 
 import android.os.Bundle;
 
@@ -42,8 +42,5 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getActivity() != null) {
-            getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE);
-        }
     }
 }

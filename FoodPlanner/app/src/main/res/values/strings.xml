@@ -27,4 +27,10 @@
     <string name="signin">Sign In</string>
     <string name="welcome">Welcome back! you\'re a tap away from something delicious</string>
     <string name="forget_password">Forget password?</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="favorite">Favorite</string>
+    <string name="calendar">Calendar</string>
+    <string name="personal">Personal</string>
+    <string name="daily_inspiration">Daily Inspiration</string>
 </resources>

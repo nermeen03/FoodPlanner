@@ -1,4 +1,4 @@
-package com.example.foodplanner.register;
+package com.example.foodplanner.app.register;
 
 import android.os.Bundle;
 

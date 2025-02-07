@@ -1,4 +1,4 @@
-package com.example.foodplanner;
+package com.example.foodplanner.app.activity;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.example.foodplanner.R;
 
 public class SplashFragment extends Fragment {
     private ImageView boyImage, foodImage;
@@ -84,20 +86,9 @@ public class SplashFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Hide the toolbar when the splash screen is displayed
-        if (getActivity() != null) {
-            getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE);
-        }
-
         // After 8 seconds, navigate to the home fragment
         new Handler().postDelayed(() -> {
-            // Navigate to the next fragment (e.g., Main screen)
             Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
-
-            // Restore the toolbar visibility after navigation
-            if (getActivity() != null) {
-                getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
-            }
         }, 1000); // Delay of 8 seconds
     }
 }

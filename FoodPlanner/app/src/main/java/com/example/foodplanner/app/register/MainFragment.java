@@ -1,4 +1,4 @@
-package com.example.foodplanner;
+package com.example.foodplanner.app.register;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.foodplanner.databinding.FragmentMainBinding;
-import com.google.android.material.snackbar.Snackbar;
 
 public class MainFragment extends Fragment {
 
@@ -24,15 +23,5 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Set up the FAB
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
-            }
-        });
     }
 }
