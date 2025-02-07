@@ -92,12 +92,12 @@ public class SplashFragment extends Fragment {
         // After 8 seconds, navigate to the home fragment
         new Handler().postDelayed(() -> {
             // Navigate to the next fragment (e.g., Main screen)
-            Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_nav_home);
+            Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
 
             // Restore the toolbar visibility after navigation
             if (getActivity() != null) {
                 getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
             }
-        }, 8000); // Delay of 8 seconds
+        }, 1000); // Delay of 8 seconds
     }
 }
