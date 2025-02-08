@@ -1,9 +1,18 @@
-package com.example.foodplanner.app.meals;
+package com.example.foodplanner.data.meals;
+
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity(tableName = "meals_table")
 public class Meal {
+    //private List<Meal> meals;
+
+    @PrimaryKey
+        @NonNull
         private String idMeal;
         private String strMeal;
 //        private Object strDrinkAlternate;
@@ -11,7 +20,7 @@ public class Meal {
         private String strArea;
         private String strInstructions;
         private String strMealThumb;
-        private Object strTags;
+       // private Object strTags;
         private String strYoutube;
         private String strIngredient1;
         private String strIngredient2;
@@ -54,15 +63,73 @@ public class Meal {
         private String strMeasure19;
         private String strMeasure20;
         private String strSource;
-        private Object strImageSource;
-        private Object strCreativeCommonsConfirmed;
-        private Object dateModified;
+//        private Object strImageSource;
+//        private Object strCreativeCommonsConfirmed;
+//        private Object dateModified;
+    public Meal() {}
 
-        public String getIdMeal() {
+    public Meal(@NonNull String idMeal, String strMeal, String strCategory, String strArea, String strInstructions, String strMealThumb, Object strTags, String strYoutube, String strIngredient1, String strIngredient2, String strIngredient3, String strIngredient4, String strIngredient5, String strIngredient6, String strIngredient7, String strIngredient8, String strIngredient9, String strIngredient10, String strIngredient11, String strIngredient12, String strIngredient13, String strIngredient14, String strIngredient15, String strIngredient16, String strIngredient17, String strIngredient18, String strIngredient19, String strIngredient20, String strMeasure1, String strMeasure2, String strMeasure3, String strMeasure4, String strMeasure5, String strMeasure6, String strMeasure7, String strMeasure8, String strMeasure9, String strMeasure10, String strMeasure11, String strMeasure12, String strMeasure13, String strMeasure14, String strMeasure15, String strMeasure16, String strMeasure17, String strMeasure18, String strMeasure19, String strMeasure20, String strSource, Object strImageSource, Object strCreativeCommonsConfirmed, Object dateModified, List<Meal> meals) {
+        this.idMeal = idMeal;
+        this.strMeal = strMeal;
+        this.strCategory = strCategory;
+        this.strArea = strArea;
+        this.strInstructions = strInstructions;
+        this.strMealThumb = strMealThumb;
+        //this.strTags = strTags;
+        this.strYoutube = strYoutube;
+        this.strIngredient1 = strIngredient1;
+        this.strIngredient2 = strIngredient2;
+        this.strIngredient3 = strIngredient3;
+        this.strIngredient4 = strIngredient4;
+        this.strIngredient5 = strIngredient5;
+        this.strIngredient6 = strIngredient6;
+        this.strIngredient7 = strIngredient7;
+        this.strIngredient8 = strIngredient8;
+        this.strIngredient9 = strIngredient9;
+        this.strIngredient10 = strIngredient10;
+        this.strIngredient11 = strIngredient11;
+        this.strIngredient12 = strIngredient12;
+        this.strIngredient13 = strIngredient13;
+        this.strIngredient14 = strIngredient14;
+        this.strIngredient15 = strIngredient15;
+        this.strIngredient16 = strIngredient16;
+        this.strIngredient17 = strIngredient17;
+        this.strIngredient18 = strIngredient18;
+        this.strIngredient19 = strIngredient19;
+        this.strIngredient20 = strIngredient20;
+        this.strMeasure1 = strMeasure1;
+        this.strMeasure2 = strMeasure2;
+        this.strMeasure3 = strMeasure3;
+        this.strMeasure4 = strMeasure4;
+        this.strMeasure5 = strMeasure5;
+        this.strMeasure6 = strMeasure6;
+        this.strMeasure7 = strMeasure7;
+        this.strMeasure8 = strMeasure8;
+        this.strMeasure9 = strMeasure9;
+        this.strMeasure10 = strMeasure10;
+        this.strMeasure11 = strMeasure11;
+        this.strMeasure12 = strMeasure12;
+        this.strMeasure13 = strMeasure13;
+        this.strMeasure14 = strMeasure14;
+        this.strMeasure15 = strMeasure15;
+        this.strMeasure16 = strMeasure16;
+        this.strMeasure17 = strMeasure17;
+        this.strMeasure18 = strMeasure18;
+        this.strMeasure19 = strMeasure19;
+        this.strMeasure20 = strMeasure20;
+        this.strSource = strSource;
+//        this.strImageSource = strImageSource;
+//        this.strCreativeCommonsConfirmed = strCreativeCommonsConfirmed;
+//        this.dateModified = dateModified;
+        //this.meals = meals;
+    }
+
+    @NonNull
+    public String getIdMeal() {
             return idMeal;
         }
 
-        public void setIdMeal(String idMeal) {
+        public void setIdMeal(@NonNull String idMeal) {
             this.idMeal = idMeal;
         }
 
@@ -106,13 +173,13 @@ public class Meal {
             this.strMealThumb = strMealThumb;
         }
 
-        public Object getStrTags() {
-            return strTags;
-        }
-
-        public void setStrTags(Object strTags) {
-            this.strTags = strTags;
-        }
+//        public Object getStrTags() {
+//            return strTags;
+//        }
+//
+//        public void setStrTags(Object strTags) {
+//            this.strTags = strTags;
+//        }
 
         public String getStrYoutube() {
             return strYoutube;
@@ -450,34 +517,33 @@ public class Meal {
             this.strSource = strSource;
         }
 
-        public Object getStrImageSource() {
-            return strImageSource;
-        }
+//        public Object getStrImageSource() {
+//            return strImageSource;
+//        }
+//
+//        public void setStrImageSource(Object strImageSource) {
+//            this.strImageSource = strImageSource;
+//        }
+//
+//        public Object getStrCreativeCommonsConfirmed() {
+//            return strCreativeCommonsConfirmed;
+//        }
+//
+//        public void setStrCreativeCommonsConfirmed(Object strCreativeCommonsConfirmed) {
+//            this.strCreativeCommonsConfirmed = strCreativeCommonsConfirmed;
+//        }
+//
+//        public Object getDateModified() {
+//            return dateModified;
+//        }
+//
+//        public void setDateModified(Object dateModified) {
+//            this.dateModified = dateModified;
+//        }
 
-        public void setStrImageSource(Object strImageSource) {
-            this.strImageSource = strImageSource;
-        }
 
-        public Object getStrCreativeCommonsConfirmed() {
-            return strCreativeCommonsConfirmed;
-        }
-
-        public void setStrCreativeCommonsConfirmed(Object strCreativeCommonsConfirmed) {
-            this.strCreativeCommonsConfirmed = strCreativeCommonsConfirmed;
-        }
-
-        public Object getDateModified() {
-            return dateModified;
-        }
-
-        public void setDateModified(Object dateModified) {
-            this.dateModified = dateModified;
-        }
-
-        private List<Meal> meals;
-
-        public List<Meal> getProducts() {
-            return meals != null ? meals : new ArrayList<>(); // Return an empty list if null
-        }
+//        public List<Meal> getProducts() {
+//            return meals != null ? meals : new ArrayList<>(); // Return an empty list if null
+//        }
     }
 

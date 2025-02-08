@@ -1,4 +1,4 @@
-package com.example.foodplanner.app.controller;
+package com.example.foodplanner.app.views;
 
 import android.os.Bundle;
 

@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +17,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
-import com.example.foodplanner.app.ApiCalling;
-import com.example.foodplanner.app.meals.CardAdapter;
-import com.example.foodplanner.app.meals.Meal;
+import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
+import com.example.foodplanner.presenter.CardAdapter;
+import com.example.foodplanner.data.meals.Meal;
+import com.example.foodplanner.data.remote.network.NetworkCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SplashFragment extends Fragment implements ApiCalling.NetworkCallback {
+public class SplashFragment extends Fragment implements NetworkCallback {
     private ImageView boyImage, foodImage;
     private CardAdapter mealAdapter;
 
@@ -51,7 +51,6 @@ public class SplashFragment extends Fragment implements ApiCalling.NetworkCallba
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                // Reset the boy's position to the left edge
                 boyImage.setTranslationX(-boyImage.getWidth());
                 boyAnimator.start(); // Restart the animation
             }
@@ -85,8 +84,6 @@ public class SplashFragment extends Fragment implements ApiCalling.NetworkCallba
             @Override
             public void onAnimationRepeat(Animator animation) {}
         });
-
-        // Start both animations
         boyAnimator.start();
         foodAnimator.start();
 
@@ -96,10 +93,8 @@ public class SplashFragment extends Fragment implements ApiCalling.NetworkCallba
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ApiCalling.getInstance().makeNetworkCall(this);
-
         new Handler().postDelayed(() -> {
-            Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
+            Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_nav_home);
         }, 5000); // Delay of 5 seconds
     }
     @Override

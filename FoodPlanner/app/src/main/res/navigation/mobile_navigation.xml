@@ -15,6 +15,9 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
 
     <!-- Main Fragment -->
@@ -33,7 +36,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.foodplanner.app.controller.HomeFragment"
+        android:name="com.example.foodplanner.app.views.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -71,14 +74,14 @@
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.foodplanner.app.controller.SearchFragment"
+        android:name="com.example.foodplanner.app.views.SearchFragment"
         android:label="SearchFragment" />
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="com.example.foodplanner.app.controller.FavoriteFragment"
+        android:name="com.example.foodplanner.app.views.FavoriteFragment"
         android:label="FavoriteFragment" />
     <fragment
         android:id="@+id/calenderFragment"
-        android:name="com.example.foodplanner.app.controller.CalenderFragment"
+        android:name="com.example.foodplanner.app.views.CalenderFragment"
         android:label="CalenderFragment" />
 </navigation>

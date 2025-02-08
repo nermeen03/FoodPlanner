@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
-    tools:context=".app.controller.HomeFragment">
+    android:background="@color/background"
+    tools:context=".app.views.HomeFragment">
 
     <!-- Horizontal Guideline -->
     <androidx.constraintlayout.widget.Guideline
@@ -14,9 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="30dp" />
+        app:layout_constraintGuide_begin="10dp" />
 
-    <!-- Vertical Guideline -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
@@ -24,7 +23,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="30dp" />
 
-    <!-- ScrollView wrapping the LinearLayout -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -35,7 +33,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:orientation="vertical">
 
             <TextView
@@ -52,9 +50,10 @@
                 android:id="@+id/recommend_recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:paddingBottom="16dp"
-                tools:listitem="@layout/item_view" />
+                tools:listitem="@layout/item_view"
+                android:layout_marginStart="-30dp"
+                />
 
             <TextView
                 android:id="@+id/textView6"
@@ -68,10 +67,10 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/meal_recyclerView"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="1000dp"
                 tools:listitem="@layout/item_view"
+                android:layout_marginStart="-5dp"
                 />
         </LinearLayout>
     </ScrollView>
