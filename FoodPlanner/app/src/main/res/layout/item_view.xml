@@ -29,8 +29,16 @@
                 tools:srcCompat="@tools:sample/avatars"
                 android:layout_gravity="center"/>
 
+            <ImageView
+                android:id="@+id/imgFav"
+                android:layout_width="33dp"
+                android:layout_height="33dp"
+                android:layout_gravity="right"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/favorite"
+                />
+
             <TextView
-                android:layout_marginTop="10dp"
                 android:id="@+id/meal_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

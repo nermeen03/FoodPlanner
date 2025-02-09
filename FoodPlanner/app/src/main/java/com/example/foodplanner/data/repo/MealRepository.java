@@ -31,13 +31,18 @@ public class MealRepository implements MealRepositoryInt{
     }
 
     @Override
-    public void getProducts(NetworkCallback networkCallback) {
-        productRemoteDataSource.makeNetworkCall(networkCallback);
+    public void getProducts(NetworkCallback networkCallback,String type,String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
     }
 
     @Override
     public void insertOneProduct(Meal meal) {
         productLocalDataSource.insetProd(meal);
+    }
+
+    @Override
+    public void getRecommend(NetworkCallback networkCallback) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,"recommend",null);
     }
 
     @Override

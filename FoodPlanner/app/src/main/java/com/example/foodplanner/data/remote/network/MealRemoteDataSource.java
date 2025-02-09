@@ -2,18 +2,14 @@ package com.example.foodplanner.data.remote.network;
 
 import android.util.Log;
 
-import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.meals.MealResponse;
 import com.google.gson.Gson;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
 
 public class MealRemoteDataSource implements MealRemoteDataSourceInt{
     private static final String TAG = "ApiCalling";
@@ -37,8 +33,21 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt{
         return mealRemoteDataSource;
     }
 
-    public void makeNetworkCall(NetworkCallback networkCallback) {
-        Call<MealResponse> call = remotePaths.getProducts();
+    public void makeNetworkCall(NetworkCallback networkCallback,String type,String name) {
+        Call<MealResponse> call = null;
+        if(type.equals("letter")) {
+            call = remotePaths.getProductsByLetter(name);
+        }else if(type.equals("name")) {
+            call = remotePaths.getProductsByName(name);
+        }else if(type.equals("countries")) {
+            call = remotePaths.getAreas();
+        }else if(type.equals("ingredients")) {
+            call = remotePaths.getIngredients();
+        }else if(type.equals("categories")) {
+            call = remotePaths.getCategories();
+        }else if(type.equals("recommend")){
+            call = remotePaths.getRecommend();
+        }
 
         call.enqueue(new Callback<MealResponse>() {
             @Override

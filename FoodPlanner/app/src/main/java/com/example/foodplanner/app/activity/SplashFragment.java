@@ -17,15 +17,14 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
-import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
-import com.example.foodplanner.presenter.CardAdapter;
+import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SplashFragment extends Fragment implements NetworkCallback {
+public class SplashFragment extends Fragment {
     private ImageView boyImage, foodImage;
     private CardAdapter mealAdapter;
 
@@ -95,21 +94,6 @@ public class SplashFragment extends Fragment implements NetworkCallback {
         super.onViewCreated(view, savedInstanceState);
         new Handler().postDelayed(() -> {
             Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_nav_home);
-        }, 5000); // Delay of 5 seconds
-    }
-    @Override
-    public void onSuccessResult(List<Meal> products) {
-        if (products != null) {
-            productList.addAll(products);
-            if (mealAdapter != null) {
-                mealAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-
-    @Override
-    public void onFailureResult(String errorMsg) {
-        Toast.makeText(getContext(), "Error: " + errorMsg, Toast.LENGTH_SHORT).show();
+        }, 5000);
     }
 }

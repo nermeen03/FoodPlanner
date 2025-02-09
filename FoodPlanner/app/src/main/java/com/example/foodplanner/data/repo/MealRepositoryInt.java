@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface MealRepositoryInt {
     public LiveData<List<Meal>> getProducts();
-    public void getProducts(NetworkCallback networkCallback);
+    public void getProducts(NetworkCallback networkCallback,String type,String name);
     public void insertOneProduct(Meal meal);
+    public void getRecommend(NetworkCallback networkCallback);
     public void deleteProduct(Meal meal);
 }
