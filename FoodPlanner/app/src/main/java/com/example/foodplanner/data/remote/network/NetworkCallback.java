@@ -4,7 +4,7 @@ import com.example.foodplanner.data.meals.Meal;
 
 import java.util.List;
 
-public interface NetworkCallback {
-    public void onSuccessResult(List<Meal> movies);
+public interface NetworkCallback<T>{
+    public void onSuccessResult(List<T> movies);
     public void onFailureResult(String errorMsg);
 }

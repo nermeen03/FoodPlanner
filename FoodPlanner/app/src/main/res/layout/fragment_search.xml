@@ -7,99 +7,112 @@
     android:background="@color/background"
     tools:context=".app.views.SearchFragment">
 
-    <!-- Horizontal Guideline -->
+    <!-- Top and Start Guidelines -->
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/guideline_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="30dp" />
 
-    <!-- Vertical Guideline -->
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
+        android:id="@+id/guideline_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="30dp" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="@id/guideline2"
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="381dp"
+        android:layout_height="914dp"
+        android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/guideline_top">
 
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
+            android:id="@+id/linearLayout_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search"
-            android:textColor="@color/white"
-            android:textSize="40sp"
-            />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView18"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Search Recipes"
-            android:textSize="45sp"
-            android:background="@color/dark_primary"
-            app:drawableLeftCompat="@drawable/search"
-            />
+            <!-- Search Title -->
+            <TextView
+                android:id="@+id/tv_search_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/search"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textView19"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search by Ingredients"
-            android:textColor="@color/white"
-            android:textSize="40sp"/>
+            <!-- Search Recipes Field -->
+            <TextView
+                android:id="@+id/tv_search_recipes"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/primary"
+                android:gravity="center_vertical"
+                android:hint="@string/search_recipes"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:drawableLeftCompat="@drawable/search" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <!-- Categories Label -->
+            <TextView
+                android:id="@+id/tv_categories_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/categories"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
 
-        <TextView
-            android:id="@+id/textView20"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Categories"
-            android:textColor="@color/white"
-            android:textSize="40sp"/>
+            <!-- Categories RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/category_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            <!-- Country Label -->
+            <TextView
+                android:id="@+id/tv_country_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/countries"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
 
-        <TextView
-            android:id="@+id/textView21"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Country"
-            android:textColor="@color/white"
-            android:textSize="40sp"/>
+            <!-- Country RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/country_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                tools:listitem="@layout/item_view" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+            <!-- Search by Ingredients Label -->
+            <TextView
+                android:id="@+id/tv_search_ingredients_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/ingredients"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
 
+            <!-- Ingredients RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ingredient_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-5dp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

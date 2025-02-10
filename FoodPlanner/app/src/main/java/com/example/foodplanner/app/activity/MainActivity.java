@@ -1,6 +1,8 @@
 package com.example.foodplanner.app.activity;
 
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -10,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.navigation.NavigationButton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -19,12 +22,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView == null) {
+            throw new IllegalStateException("BottomNavigationView not found. Check your layout!");
+        }
 
-//        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.nav_host_fragment);
-////        if (navHostFragment != null) {
-////            NavController navController = navHostFragment.getNavController();
-////        }
+        View navHostView = findViewById(R.id.nav_host_fragment);
+        NavigationButton.navigationOnClick(bottomNavigationView, navHostView);
     }
 
 }

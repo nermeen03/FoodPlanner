@@ -34,4 +34,8 @@
     <string name="personal">Personal</string>
     <string name="daily_inspiration">Daily Inspiration</string>
     <string name="logout">LogOut</string>
+    <string name="categories">Categories</string>
+    <string name="search_recipes">Search Recipes</string>
+    <string name="countries">Countries</string>
+    <string name="ingredients">Ingredients</string>
 </resources>

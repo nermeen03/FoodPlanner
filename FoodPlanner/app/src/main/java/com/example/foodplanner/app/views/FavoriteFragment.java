@@ -25,6 +25,7 @@ import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.presenter.HomePresenter;
 import com.example.foodplanner.presenter.Listener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
-public class FavoriteFragment extends Fragment implements AllMealsView, Listener {
+public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Listener {
     private RecyclerView recyclerView;
     FavAdapter cardAdapter;
     FavPresenter presenter;
@@ -58,11 +59,6 @@ public class FavoriteFragment extends Fragment implements AllMealsView, Listener
         });
 
         return view;
-    }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        NavigationButton.navClicked(view);
     }
     @Override
     public void showData(List<Meal> meals) {

@@ -22,12 +22,13 @@ import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.presenter.HomePresenter;
 import com.example.foodplanner.presenter.Listener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements AllMealsView, Listener {
+public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener {
 
     private RecyclerView recommend_recyclerView;
     private RecyclerView meal_recyclerView;
@@ -67,12 +68,6 @@ public class HomeFragment extends Fragment implements AllMealsView, Listener {
 
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        NavigationButton.navClicked(view);
     }
 
     @Override

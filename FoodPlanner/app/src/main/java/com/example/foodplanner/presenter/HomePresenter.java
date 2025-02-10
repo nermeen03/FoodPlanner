@@ -7,7 +7,7 @@ import com.example.foodplanner.data.repo.MealRepositoryInt;
 
 import java.util.List;
 
-public class HomePresenter implements NetworkCallback {
+public class HomePresenter implements NetworkCallback<Meal> {
     AllMealsView allProductsView;
     MealRepositoryInt mealRepository;
 

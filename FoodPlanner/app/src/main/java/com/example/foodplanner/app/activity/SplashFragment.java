@@ -94,6 +94,6 @@ public class SplashFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         new Handler().postDelayed(() -> {
             Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_nav_home);
-        }, 5000);
+        }, 1000);
     }
 }

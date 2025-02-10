@@ -25,6 +25,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     private Context context;
     private Listener listener;
     private final List<String> favoriteMeals = new ArrayList<>();
+
     public CardAdapter(List<Meal> meals, Context context,Listener listener) {
         this.meals = meals;
         this.context = context;

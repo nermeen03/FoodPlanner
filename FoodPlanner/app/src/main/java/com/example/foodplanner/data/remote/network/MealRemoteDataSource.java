@@ -2,6 +2,7 @@ package com.example.foodplanner.data.remote.network;
 
 import android.util.Log;
 
+import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.meals.MealResponse;
 import com.google.gson.Gson;
 
@@ -39,12 +40,6 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt{
             call = remotePaths.getProductsByLetter(name);
         }else if(type.equals("name")) {
             call = remotePaths.getProductsByName(name);
-        }else if(type.equals("countries")) {
-            call = remotePaths.getAreas();
-        }else if(type.equals("ingredients")) {
-            call = remotePaths.getIngredients();
-        }else if(type.equals("categories")) {
-            call = remotePaths.getCategories();
         }else if(type.equals("recommend")){
             call = remotePaths.getRecommend();
         }
