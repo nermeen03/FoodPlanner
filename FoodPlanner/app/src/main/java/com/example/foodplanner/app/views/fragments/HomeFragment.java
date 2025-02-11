@@ -12,27 +12,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.navigation.NavigationHandler;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.meals.Meal;
+import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.app.adapters.CardAdapter;
+import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.presenter.HomePresenter;
 import com.example.foodplanner.app.adapters.Listener;
+import com.example.foodplanner.presenter.MealPresenter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener {
+public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener, NavigationHandler {
     private HomeViewModel viewModel;
     private RecyclerView recommend_recyclerView;
     private RecyclerView meal_recyclerView;
@@ -66,8 +71,15 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         meal_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         MealPlanRepository repository = new MealPlanRepository(getActivity().getApplication());
-        mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository);
-        recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository);
+        MealFragment mealFragment = new MealFragment();
+        MealPresenter mealPresenter = new MealPresenter(
+                mealFragment,
+                RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
+        );
+
+        //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
+        mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository,mealPresenter,view);
+        recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository,mealPresenter,view);
         presenter = new HomePresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
 
         recommend_recyclerView.setAdapter(recommendAdapter);
@@ -96,16 +108,27 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     public void showData(List<Meal> meals) {
         isLoading = false;
         isRecommend = false;
+        Log.i("TAG", "showData: here "+meals);
         if (meals.size() > 1) {
             if (meals != null && !meals.isEmpty()) {
                 viewModel.updateMealsList(meals);
             }
         } else {
-            viewModel.updateRecommendList(meals);
+            if(meals.get(0) instanceof Meal) {
+                viewModel.updateRecommendList(meals);
+            }
+            else{
+                Log.i("TAG", "showData: hahda"+meals);
+            }
         }
     }
 
+    @Override
+    public void navigateToMealFragment(ArrayList<Data> data) {
+        Navigation.findNavController(requireView()).navigate(HomeFragmentDirections.actionHomeFragmentToFavoriteFragment());
+        HomeFragmentDirections.actionHomeFragmentToFavoriteFragment();
 
+    }
 
     @Override
     public void showError(String error) {

@@ -1,6 +1,5 @@
 package com.example.foodplanner.app.navigation;
 
-import android.annotation.SuppressLint;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -8,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavigationButton {
@@ -18,7 +16,7 @@ public class NavigationButton {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.page_1) {
-                    Navigation.findNavController(view).navigate(R.id.nav_home);
+                    Navigation.findNavController(view).navigate(R.id.homeFragment);
                     return true;
                 } else if (itemId == R.id.page_2) {
                     Navigation.findNavController(view).navigate(R.id.searchFragment);

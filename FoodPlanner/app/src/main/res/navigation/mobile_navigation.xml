@@ -4,87 +4,77 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/splashFragment">
-
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.foodplanner.app.activity.SplashFragment"
-        android:label="SplashFragment"
-        tools:layout="@layout/fragment_splash">
+        android:label="SplashFragment" >
         <action
-            android:id="@+id/action_splashFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/splashFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_splashFragment_to_nav_home"
-            app:destination="@id/nav_home" />
+            android:id="@+id/action_splashFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
-
-    <!-- Main Fragment -->
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.foodplanner.app.register.MainFragment"
-        android:label="MainFragment"
+        android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_mainFragment_to_signUpFragment2"
-            app:destination="@id/signUpFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_signInFragment2"
+            android:id="@+id/action_mainFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.example.foodplanner.app.views.fragments.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_nav_home_to_searchFragment"
-            app:destination="@id/searchFragment" />
-        <action
-            android:id="@+id/action_nav_home_to_favoriteFragment"
-            app:destination="@id/favoriteFragment" />
-        <action
-            android:id="@+id/action_nav_home_to_calenderFragment"
-            app:destination="@id/calenderFragment" />
-        <action
-            android:id="@+id/action_nav_home_to_calendarFragment"
-            app:destination="@id/calenderFragment" />
-    </fragment>
-
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.example.foodplanner.app.register.SignInFragment"
         android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" >
-        <action
-            android:id="@+id/action_signInFragment_to_nav_home"
-            app:destination="@id/nav_home"
-            app:popUpTo="@id/splashFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_sign_in" />
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.foodplanner.app.register.SignUpFragment"
         android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" >
+        tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.foodplanner.app.views.fragments.HomeFragment"
+        android:label="HomeFragment" >
         <action
-            android:id="@+id/action_signUpFragment_to_nav_home"
-            app:destination="@id/nav_home"
-            app:popUpTo="@id/splashFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_calenderFragment"
+            app:destination="@id/calenderFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mealFragment"
+            app:destination="@id/mealFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.foodplanner.app.views.fragments.SearchFragment"
-        android:label="SearchFragment" />
-    <fragment
-        android:id="@+id/favoriteFragment"
-        android:name="com.example.foodplanner.app.views.fragments.FavoriteFragment"
-        android:label="FavoriteFragment" />
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_mealFragment"
+            app:destination="@id/mealFragment" />
+    </fragment>
     <fragment
         android:id="@+id/calenderFragment"
         android:name="com.example.foodplanner.app.views.fragments.CalenderFragment"
         android:label="CalenderFragment" />
+    <fragment
+        android:id="@+id/mealFragment"
+        android:name="com.example.foodplanner.app.views.fragments.MealFragment"
+        android:label="MealFragment" />
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.foodplanner.app.views.fragments.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_mealFragment"
+            app:destination="@id/mealFragment" />
+    </fragment>
 </navigation>

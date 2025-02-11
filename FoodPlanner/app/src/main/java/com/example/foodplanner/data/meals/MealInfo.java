@@ -6,10 +6,11 @@ import androidx.room.PrimaryKey;
 
 import com.example.foodplanner.data.pojos.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity(tableName = "meals_info_table")
-public class MealInfo implements Data {
+public class MealInfo implements Data, Serializable {
     @PrimaryKey
         @NonNull
         private String idMeal;

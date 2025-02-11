@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-10T23:44:13.771129100Z">
+        <DropdownSelection timestamp="2025-02-11T14:02:18.023737400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RF8N815T81H" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\nerme\.android\avd\Note10Plus.avd" />
             </handle>
           </Target>
         </DropdownSelection>

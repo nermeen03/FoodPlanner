@@ -6,7 +6,7 @@ public class Category implements Data {
     @SerializedName("strCategory")
     private String category;
 
-    public String getInfo() {
+    public String getIngredient() {
         return category;
     }
 

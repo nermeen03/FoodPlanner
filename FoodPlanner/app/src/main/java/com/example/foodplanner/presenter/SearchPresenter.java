@@ -27,9 +27,11 @@ public class SearchPresenter implements NetworkCallback<Data> {
     public void getCountries(String type, String name){
         searchRepositoryInt.getCountries(this,type,name);
     }
+
+
     @Override
-    public void onSuccessResult(List<Data> countries) {
-        allCountries.showData(countries);
+    public void onSuccessResult(List<Data> data) {
+        allCountries.showData(data);
     }
     @Override
     public void onFailureResult(String errorMsg) {

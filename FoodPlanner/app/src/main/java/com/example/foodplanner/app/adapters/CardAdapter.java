@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +19,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
+import com.example.foodplanner.data.local.MealsLocalDataSource;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.meals.Meal;
+import com.example.foodplanner.data.pojos.Data;
+import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
+import com.example.foodplanner.data.remote.network.MealRemoteDataSourceInt;
+import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.MealPlanRepository;
+import com.example.foodplanner.data.repo.MealRepository;
+import com.example.foodplanner.data.repo.RemoteMealRepository;
+import com.example.foodplanner.presenter.HomePresenter;
+import com.example.foodplanner.presenter.MealPresenter;
+import com.example.foodplanner.presenter.SearchPresenter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,13 +43,25 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     private Listener listener;
     private final List<String> favoriteMeals = new ArrayList<>();
     private MealPlanRepository mealPlanRepository;
-    public CardAdapter(List<Meal> meals, Context context, Listener listener, MealPlanRepository mealPlanRepository) {
+    private MealPresenter mealPresenter;
+    private View view;
+    public CardAdapter(List<Meal> meals,
+                       Context context,
+                       Listener listener,
+                       MealPlanRepository mealPlanRepository,
+                       MealPresenter mealPresenter,View view) {
         this.meals = meals;
         this.context = context;
         this.listener = listener;
-        this.mealPlanRepository = mealPlanRepository; // Initialize the repository field
+        this.mealPlanRepository = mealPlanRepository;
+        this.mealPresenter = mealPresenter;
+        this.view = view;
     }
 
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public CardAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -80,6 +103,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                 showWeekDialog(meal);
             }
         });
+        holder.btnMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mealPresenter.getMeal("meal", holder.txtName.getText().toString(),view);
+            }
+        });
     }
 
     @Override
@@ -91,6 +120,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         public ImageView img;
         public TextView txtName, txtDes;
         public ImageView imgFav,imgAdd;
+        private Button btnMore;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.meal_img);
@@ -98,6 +128,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             txtDes = itemView.findViewById(R.id.meal_desc);
             imgFav = itemView.findViewById(R.id.imgFav);
             imgAdd = itemView.findViewById(R.id.imgAdd);
+            btnMore = itemView.findViewById(R.id.meal_btn);
 
         }
     }
@@ -117,7 +148,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         // Create a date formatter (e.g., "Mon, Jan 2")
         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("EEE, MMM d", java.util.Locale.getDefault());
 
-        // Populate the arrays with each day starting from today.
         for (int i = 0; i < 7; i++) {
             Calendar day = (Calendar) calendar.clone();
             weekDays[i] = day;

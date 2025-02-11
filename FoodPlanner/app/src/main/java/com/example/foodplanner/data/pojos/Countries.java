@@ -9,7 +9,7 @@ public class Countries implements Data{
     @SerializedName("strArea")
     private String area;
 
-    public String getInfo() {
+    public String getIngredient() {
         return area;
     }
 

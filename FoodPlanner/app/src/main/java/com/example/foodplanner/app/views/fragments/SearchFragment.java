@@ -19,7 +19,6 @@ import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.NamesAdapter;
 import com.example.foodplanner.app.adapters.SearchAdapter;
 import com.example.foodplanner.app.views.viewhelpers.AllDataView;
-import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.app.views.viewhelpers.SearchViewModel;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.pojos.Category;

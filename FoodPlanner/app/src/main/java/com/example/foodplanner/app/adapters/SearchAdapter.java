@@ -1,7 +1,6 @@
 package com.example.foodplanner.app.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
         Data data = dataList.get(position);
-        holder.btn.setText(data.getInfo());
+        holder.btn.setText(data.getIngredient());
 
     }
 

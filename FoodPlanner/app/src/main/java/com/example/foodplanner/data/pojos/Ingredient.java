@@ -5,12 +5,17 @@ import com.google.gson.annotations.SerializedName;
 public class Ingredient implements Data{
     @SerializedName("strIngredient")
     private String ingredient;
-
-    public String getInfo() {
+    private int imageResId;
+    public String getIngredient() {
         return ingredient;
     }
-
-    public void setInfo(String ingredient) {
+    public Ingredient(){}
+    public Ingredient(String ingredient, int imageResId) {
         this.ingredient = ingredient;
+        this.imageResId = imageResId;
+    }
+
+    public int getImageResId() {
+        return imageResId;
     }
 }

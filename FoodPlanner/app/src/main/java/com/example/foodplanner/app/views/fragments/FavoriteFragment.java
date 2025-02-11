@@ -13,14 +13,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.foodplanner.R;
-import com.example.foodplanner.app.adapters.FavAdapter;
+import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
+import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
+import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.app.adapters.Listener;
+import com.example.foodplanner.presenter.MealPresenter;
 
 import java.util.List;
 
@@ -30,9 +33,10 @@ import java.util.List;
  */
 public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Listener {
     private RecyclerView recyclerView;
-    FavAdapter cardAdapter;
+    CardAdapter cardAdapter;
     FavPresenter presenter;
     private LiveData<List<Meal>> mealsList;
+
     public FavoriteFragment() {
     }
 
@@ -42,17 +46,24 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
 
         recyclerView = view.findViewById(R.id.fav_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        cardAdapter = new FavAdapter(getContext(), this);
-        recyclerView.setAdapter(cardAdapter);
-
         presenter = new FavPresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
         mealsList = presenter.getProducts();
+
+        MealPlanRepository repository = new MealPlanRepository(getActivity().getApplication());
+        MealFragment mealFragment = new MealFragment();
+        MealPresenter mealPresenter = new MealPresenter(
+                mealFragment,
+                RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
+        );
+
+        //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
+        cardAdapter = new CardAdapter((List<Meal>) mealsList,getContext(), this,repository,mealPresenter,view);
         mealsList.observe(getViewLifecycleOwner(), meals -> {
             if (meals != null) {
                 cardAdapter.setMeals(meals);
             }
         });
-
+        recyclerView.setAdapter(cardAdapter);
         return view;
     }
     @Override

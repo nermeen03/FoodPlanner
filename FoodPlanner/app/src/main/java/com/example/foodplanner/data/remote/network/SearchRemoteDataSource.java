@@ -2,6 +2,7 @@ package com.example.foodplanner.data.remote.network;
 
 import android.util.Log;
 
+import com.example.foodplanner.data.meals.MealInfoResponse;
 import com.example.foodplanner.data.meals.MealResponse;
 import com.example.foodplanner.data.pojos.CategoriesResponse;
 import com.example.foodplanner.data.pojos.CountriesResponse;
@@ -45,8 +46,25 @@ public class SearchRemoteDataSource implements MealRemoteDataSourceInt{
             getIngredients(networkCallback);
         }else if(type.equals("categories")) {
             getCategories(networkCallback);
+        }else if(type.equals("name")){
+            getMeal(networkCallback,name);
         }
 
+    }
+    public void getMeal(NetworkCallback networkCallback,String name) {
+        remotePaths.getProductsByName(name).enqueue(new Callback<MealInfoResponse>() {
+            @Override
+            public void onResponse(Call<MealInfoResponse> call, Response<MealInfoResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API Response", new Gson().toJson(response.body()));
+                    networkCallback.onSuccessResult(response.body().getMeal());
+                }
+            }
+            @Override
+            public void onFailure(Call<MealInfoResponse> call, Throwable t) {
+                networkCallback.onFailureResult(t.getMessage());
+            }
+        });
     }
     public void getMeals(NetworkCallback networkCallback,String name) {
         remotePaths.getProductsByLetter(name).enqueue(new Callback<MealResponse>() {

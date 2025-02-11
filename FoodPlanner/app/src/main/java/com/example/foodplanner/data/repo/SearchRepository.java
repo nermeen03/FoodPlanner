@@ -40,5 +40,4 @@ public class SearchRepository implements SearchRepositoryInt {
     public void getCountries(NetworkCallback networkCallback,String type,String name) {
         productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
     }
-
 }
