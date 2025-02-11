@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".app.views.FavoriteFragment">
+    tools:context=".app.views.fragments.FavoriteFragment">
 
     <!-- Horizontal Guideline -->
     <androidx.constraintlayout.widget.Guideline

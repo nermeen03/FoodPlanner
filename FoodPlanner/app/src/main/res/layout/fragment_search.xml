@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".app.views.SearchFragment">
+    tools:context=".app.views.fragments.SearchFragment">
 
     <!-- Top and Start Guidelines -->
     <androidx.constraintlayout.widget.Guideline
@@ -49,8 +49,8 @@
                 android:textStyle="bold" />
 
             <!-- Search Recipes Field -->
-            <TextView
-                android:id="@+id/tv_search_recipes"
+            <EditText
+                android:id="@+id/et_search_recipes"
                 android:layout_width="350dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="20dp"
@@ -58,10 +58,17 @@
                 android:gravity="center_vertical"
                 android:hint="@string/search_recipes"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                app:drawableLeftCompat="@drawable/search" />
+                android:drawableLeft="@drawable/search"
+                android:textSize="18sp" />
 
             <!-- Categories Label -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/meal_name_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                />
+
             <TextView
                 android:id="@+id/tv_categories_label"
                 android:layout_width="match_parent"

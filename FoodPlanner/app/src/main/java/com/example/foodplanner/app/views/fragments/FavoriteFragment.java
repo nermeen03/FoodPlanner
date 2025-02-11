@@ -1,9 +1,7 @@
-package com.example.foodplanner.app.views;
+package com.example.foodplanner.app.views.fragments;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,16 +14,13 @@ import android.widget.Toast;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.FavAdapter;
-import com.example.foodplanner.app.navigation.NavigationButton;
+import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
-import com.example.foodplanner.data.local.MealsLocalDataSourceInt;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.presenter.FavPresenter;
-import com.example.foodplanner.presenter.HomePresenter;
-import com.example.foodplanner.presenter.Listener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.foodplanner.app.adapters.Listener;
 
 import java.util.List;
 

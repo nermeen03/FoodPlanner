@@ -1,6 +1,6 @@
 package com.example.foodplanner.presenter;
 
-import com.example.foodplanner.app.views.AllMealsView;
+import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.MealRepositoryInt;

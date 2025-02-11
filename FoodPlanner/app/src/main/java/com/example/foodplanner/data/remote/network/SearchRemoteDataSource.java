@@ -2,6 +2,7 @@ package com.example.foodplanner.data.remote.network;
 
 import android.util.Log;
 
+import com.example.foodplanner.data.meals.MealResponse;
 import com.example.foodplanner.data.pojos.CategoriesResponse;
 import com.example.foodplanner.data.pojos.CountriesResponse;
 import com.example.foodplanner.data.pojos.IngredientResponse;
@@ -36,7 +37,9 @@ public class SearchRemoteDataSource implements MealRemoteDataSourceInt{
     }
 
     public void makeNetworkCall(NetworkCallback networkCallback,String type,String name) {
-        if(type.equals("countries")) {
+        if(type.equals("letter")) {
+            getMeals(networkCallback,name);
+        }else if(type.equals("countries")) {
             getCountries(networkCallback);
         }else if(type.equals("ingredients")) {
             getIngredients(networkCallback);
@@ -44,6 +47,21 @@ public class SearchRemoteDataSource implements MealRemoteDataSourceInt{
             getCategories(networkCallback);
         }
 
+    }
+    public void getMeals(NetworkCallback networkCallback,String name) {
+        remotePaths.getProductsByLetter(name).enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API Response", new Gson().toJson(response.body()));
+                    networkCallback.onSuccessResult(response.body().getProducts());
+                }
+            }
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
+                networkCallback.onFailureResult(t.getMessage());
+            }
+        });
     }
     public void getCountries(NetworkCallback networkCallback) {
         remotePaths.getAreas().enqueue(new Callback<CountriesResponse>() {

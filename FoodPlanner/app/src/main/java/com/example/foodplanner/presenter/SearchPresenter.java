@@ -1,8 +1,6 @@
 package com.example.foodplanner.presenter;
 
-import com.example.foodplanner.app.views.AllDataView;
-import com.example.foodplanner.app.views.AllMealsView;
-import com.example.foodplanner.data.pojos.Countries;
+import com.example.foodplanner.app.views.viewhelpers.AllDataView;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.SearchRepositoryInt;
@@ -16,6 +14,9 @@ public class SearchPresenter implements NetworkCallback<Data> {
     public SearchPresenter(AllDataView allCountries, SearchRepositoryInt searchRepositoryInt) {
         this.allCountries = allCountries;
         this.searchRepositoryInt = searchRepositoryInt;
+    }
+    public void getProducts(String type,String name){
+        searchRepositoryInt.getProducts(this,type,name);
     }
     public void getCategories(String type, String name){
         searchRepositoryInt.getCategories(this,type,name);

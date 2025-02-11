@@ -5,19 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
-import com.example.foodplanner.data.meals.Meal;
-import com.example.foodplanner.data.pojos.Countries;
 import com.example.foodplanner.data.pojos.Data;
-import com.example.foodplanner.presenter.Listener;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -43,7 +36,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
-        Log.i("TAG", "inBind: "+dataList);
         Data data = dataList.get(position);
         holder.btn.setText(data.getInfo());
 
@@ -61,5 +53,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             btn = itemView.findViewById(R.id.btn_country);
         }
     }
-
+    public void updateData(List<Data> newNames) {
+        dataList.clear();
+        dataList.addAll(newNames);
+        notifyDataSetChanged();
+    }
 }

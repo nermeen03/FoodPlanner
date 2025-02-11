@@ -22,7 +22,10 @@ public class SearchRepository implements SearchRepositoryInt {
         }
         return repo;
     }
-
+    @Override
+    public void getProducts(NetworkCallback networkCallback, String type, String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
+    }
     @Override
     public void getCategories(NetworkCallback networkCallback, String type, String name) {
         productRemoteDataSource.makeNetworkCall(networkCallback,type,name);

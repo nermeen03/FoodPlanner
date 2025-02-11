@@ -42,10 +42,30 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
-    implementation "androidx.room:room-runtime:2.4.1"
-    annotationProcessor "androidx.room:room-compiler:2.4.1"
+
+    //Observable
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.7'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
+
+    // Room (for local storage)
+    implementation 'androidx.room:room-runtime:2.5.2'
+    annotationProcessor 'androidx.room:room-compiler:2.5.2'
+    implementation 'androidx.room:room-rxjava2:2.5.2'
+
+    // Retrofit (for remote sync)
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+
+    // RxJava (for asynchronous handling)
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+
 }

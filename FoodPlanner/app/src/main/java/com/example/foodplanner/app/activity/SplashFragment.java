@@ -2,6 +2,7 @@ package com.example.foodplanner.app.activity;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,6 @@ public class SplashFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_splash, container, false);
-
         boyImage = view.findViewById(R.id.boyImage);
         foodImage = view.findViewById(R.id.foodImage);
 

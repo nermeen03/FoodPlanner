@@ -1,6 +1,5 @@
-package com.example.foodplanner.app.views;
+package com.example.foodplanner.app.views.viewhelpers;
 
-import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.pojos.Data;
 
 import java.util.List;
