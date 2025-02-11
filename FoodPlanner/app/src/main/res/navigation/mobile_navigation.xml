@@ -67,7 +67,11 @@
     <fragment
         android:id="@+id/mealFragment"
         android:name="com.example.foodplanner.app.views.fragments.MealFragment"
-        android:label="MealFragment" />
+        android:label="MealFragment" >
+        <argument
+            android:name="meal"
+            app:argType="com.example.foodplanner.data.meals.MealInfo" />
+    </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.example.foodplanner.app.views.fragments.FavoriteFragment"

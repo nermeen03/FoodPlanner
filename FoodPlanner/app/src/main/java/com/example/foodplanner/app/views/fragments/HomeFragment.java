@@ -125,8 +125,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
 
     @Override
     public void navigateToMealFragment(ArrayList<Data> data) {
-        Navigation.findNavController(requireView()).navigate(HomeFragmentDirections.actionHomeFragmentToFavoriteFragment());
-        HomeFragmentDirections.actionHomeFragmentToFavoriteFragment();
+
 
     }
 

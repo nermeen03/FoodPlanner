@@ -524,26 +524,6 @@ public class MealInfo implements Data, Serializable {
 //        public void setStrImageSource(Object strImageSource) {
 //            this.strImageSource = strImageSource;
 //        }
-//
-//        public Object getStrCreativeCommonsConfirmed() {
-//            return strCreativeCommonsConfirmed;
-//        }
-//
-//        public void setStrCreativeCommonsConfirmed(Object strCreativeCommonsConfirmed) {
-//            this.strCreativeCommonsConfirmed = strCreativeCommonsConfirmed;
-//        }
-//
-//        public Object getDateModified() {
-//            return dateModified;
-//        }
-//
-//        public void setDateModified(Object dateModified) {
-//            this.dateModified = dateModified;
-//        }
 
-
-//        public List<Meal> getProducts() {
-//            return meals != null ? meals : new ArrayList<>(); // Return an empty list if null
-//        }
     }
 

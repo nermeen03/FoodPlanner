@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.views.fragments.HomeFragmentDirections;
 import com.example.foodplanner.app.views.fragments.MealFragment;
+import com.example.foodplanner.data.meals.MealInfo;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.RemoteMealRepositoryInt;
@@ -35,10 +37,13 @@ public class MealPresenter implements NetworkCallback<Data> {
     @Override
     public void onSuccessResult(List<Data> data) {
         if(view!=null){
-            Log.i("TAG", "onSuccessResult: "+Navigation.findNavController(view).getCurrentBackStackEntry().getDestination().getLabel());
-
-//                    HomeFragmentDirections.actionHomeFragmentToMealFragment(dataArrayList);
-//            Navigation.findNavController(view).navigate(action);
+            if(Navigation.findNavController(view).getCurrentDestination().getId() == R.id.homeFragment){
+                Log.d("TAG", "onSuccessResult: fuuuu");
+                MealInfo dataArray = (MealInfo) data.get(0);
+                Navigation.findNavController(view).navigate(HomeFragmentDirections.actionHomeFragmentToMealFragment(dataArray));
+                //HomeFragmentDirections.actionHomeFragmentToFavoriteFragment();
+                mealFragment.showData(data);
+            }
         }
     }
 

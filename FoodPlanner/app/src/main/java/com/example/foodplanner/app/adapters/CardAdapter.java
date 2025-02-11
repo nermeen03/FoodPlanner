@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -45,12 +46,25 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     private MealPlanRepository mealPlanRepository;
     private MealPresenter mealPresenter;
     private View view;
+    private LiveData<List<Meal>> mealLive;
     public CardAdapter(List<Meal> meals,
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
                        MealPresenter mealPresenter,View view) {
         this.meals = meals;
+        this.context = context;
+        this.listener = listener;
+        this.mealPlanRepository = mealPlanRepository;
+        this.mealPresenter = mealPresenter;
+        this.view = view;
+    }
+    public CardAdapter(LiveData<List<Meal>> meals,
+                       Context context,
+                       Listener listener,
+                       MealPlanRepository mealPlanRepository,
+                       MealPresenter mealPresenter, View view) {
+        this.mealLive = meals;
         this.context = context;
         this.listener = listener;
         this.mealPlanRepository = mealPlanRepository;
