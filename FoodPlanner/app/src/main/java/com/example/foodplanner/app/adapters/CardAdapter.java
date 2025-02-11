@@ -20,19 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
-import com.example.foodplanner.data.local.MealsLocalDataSource;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.pojos.Data;
-import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
-import com.example.foodplanner.data.remote.network.MealRemoteDataSourceInt;
-import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.MealPlanRepository;
-import com.example.foodplanner.data.repo.MealRepository;
-import com.example.foodplanner.data.repo.RemoteMealRepository;
-import com.example.foodplanner.presenter.HomePresenter;
 import com.example.foodplanner.presenter.MealPresenter;
-import com.example.foodplanner.presenter.SearchPresenter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,7 +43,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
-                       MealPresenter mealPresenter,View view) {
+                       MealPresenter mealPresenter, View view) {
         this.meals = meals;
         this.context = context;
         this.listener = listener;

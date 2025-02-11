@@ -44,6 +44,15 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt{
         }else if(type.equals("meal")){
             getMeal(networkCallback,type,name);
             return;
+        }else if(type.equals("categories")) {
+            getCategories(networkCallback, type, name);
+            return;
+        }else if(type.equals("countries")) {
+            getCountries(networkCallback, type, name);
+            return;
+        }else if(type.equals("ingredients")) {
+            getIngredients(networkCallback, type, name);
+            return;
         }
 
         call.enqueue(new Callback<MealResponse>() {
@@ -75,6 +84,60 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt{
 
             @Override
             public void onFailure(Call<MealInfoResponse> call, Throwable t) {
+                Log.e(TAG, "Network error: ", t);
+                networkCallback.onFailureResult(t.getMessage());
+            }
+        });
+    }
+    private void getCategories(NetworkCallback networkCallback,String type,String name){
+        Call<MealResponse> call = remotePaths.filterByCategory(name);
+        call.enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API Response", new Gson().toJson(response.body()));
+                    networkCallback.onSuccessResult(response.body().getProducts());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
+                Log.e(TAG, "Network error: ", t);
+                networkCallback.onFailureResult(t.getMessage());
+            }
+        });
+    }
+    private void getCountries(NetworkCallback networkCallback,String type,String name){
+        Call<MealResponse> call = remotePaths.filterByArea(name);
+        call.enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API Response", new Gson().toJson(response.body()));
+                    networkCallback.onSuccessResult(response.body().getProducts());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
+                Log.e(TAG, "Network error: ", t);
+                networkCallback.onFailureResult(t.getMessage());
+            }
+        });
+    }
+    private void getIngredients(NetworkCallback networkCallback,String type,String name){
+        Call<MealResponse> call = remotePaths.filterByIngredient(name);
+        call.enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API Response", new Gson().toJson(response.body()));
+                    networkCallback.onSuccessResult(response.body().getProducts());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
                 Log.e(TAG, "Network error: ", t);
                 networkCallback.onFailureResult(t.getMessage());
             }

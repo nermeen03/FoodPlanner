@@ -25,9 +25,12 @@ import com.example.foodplanner.data.pojos.Category;
 import com.example.foodplanner.data.pojos.Countries;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.pojos.Ingredient;
+import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.remote.network.SearchRemoteDataSource;
+import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.data.repo.SearchRepository;
 import com.example.foodplanner.app.adapters.Listener;
+import com.example.foodplanner.presenter.MealPresenter;
 import com.example.foodplanner.presenter.SearchPresenter;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,23 +66,28 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         Log.i("TAG", "onCreateView: hgsdye");
-        // Setup recyclers for countries, ingredients, and categories
+        MealPresenter mealPresenter = new MealPresenter(
+                new MealFragment(),
+                RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
+        );
+
+
         country_recycler = view.findViewById(R.id.country_recycler);
 //        country_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(country_recycler);
-        countryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this);
+        countryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         country_recycler.setAdapter(countryAdapter);
 
         ingredient_recycler = view.findViewById(R.id.ingredient_recycler);
 //        ingredient_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(ingredient_recycler);
-        ingredientAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this);
+        ingredientAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         ingredient_recycler.setAdapter(ingredientAdapter);
 
         category_recycler = view.findViewById(R.id.category_recycler);
 //        category_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(category_recycler);
-        categoryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this);
+        categoryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         category_recycler.setAdapter(categoryAdapter);
 
         // Set up presenter (assuming it calls showData when results come in)
@@ -87,7 +95,9 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         editText = view.findViewById(R.id.et_search_recipes);
         recyclerMealsName = view.findViewById(R.id.meal_name_recycler);
         recyclerMealsName.setLayoutManager(new LinearLayoutManager(getContext()));
-        namesAdapter = new NamesAdapter(new ArrayList<>());
+
+
+        namesAdapter = new NamesAdapter(new ArrayList<>(),mealPresenter);
         recyclerMealsName.setAdapter(namesAdapter);
 
         // (Optional) Also observe other lists to update your SearchAdapters:

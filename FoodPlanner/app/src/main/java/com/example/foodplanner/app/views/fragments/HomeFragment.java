@@ -12,18 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodplanner.R;
-import com.example.foodplanner.app.navigation.NavigationHandler;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
-import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.meals.Meal;
-import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
@@ -37,7 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener, NavigationHandler {
+public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener {
     private HomeViewModel viewModel;
     private RecyclerView recommend_recyclerView;
     private RecyclerView meal_recyclerView;
@@ -121,12 +117,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                 Log.i("TAG", "showData: hahda"+meals);
             }
         }
-    }
-
-    @Override
-    public void navigateToMealFragment(ArrayList<Data> data) {
-
-
     }
 
     @Override

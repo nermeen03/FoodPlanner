@@ -27,5 +27,10 @@ public interface RemotePaths{
     Call<CategoriesResponse> getCategories();
     @GET("random.php")
     Call<MealResponse> getRecommend();
-
+    @GET("filter.php")
+    Call<MealResponse> filterByIngredient(@Query("i") String name);
+    @GET("filter.php")
+    Call<MealResponse> filterByCategory(@Query("c") String name);
+    @GET("filter.php")
+    Call<MealResponse> filterByArea(@Query("a") String name);
 }

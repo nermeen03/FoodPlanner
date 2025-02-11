@@ -9,8 +9,10 @@ import androidx.room.PrimaryKey;
 
 import com.example.foodplanner.data.pojos.Data;
 
+import java.io.Serializable;
+
 @Entity(tableName = "meals_table")
-public class Meal implements Data, Parcelable {
+public class Meal implements Data, Serializable {
 
     @PrimaryKey
     @NonNull
@@ -57,34 +59,4 @@ public class Meal implements Data, Parcelable {
         this.strMealThumb = strMealThumb;
     }
 
-    // Parcelable implementation
-    protected Meal(Parcel in) {
-        idMeal = in.readString();
-        strMeal = in.readString();
-        strMealThumb = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(idMeal);
-        dest.writeString(strMeal);
-        dest.writeString(strMealThumb);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Meal> CREATOR = new Creator<Meal>() {
-        @Override
-        public Meal createFromParcel(Parcel in) {
-            return new Meal(in);
-        }
-
-        @Override
-        public Meal[] newArray(int size) {
-            return new Meal[size];
-        }
-    };
 }

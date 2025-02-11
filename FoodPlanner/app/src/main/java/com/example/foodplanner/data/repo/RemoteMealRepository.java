@@ -20,4 +20,19 @@ public class RemoteMealRepository implements RemoteMealRepositoryInt{
     public void getMeal(NetworkCallback networkCallback, String type, String name) {
         productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
     }
+
+    @Override
+    public void getIngredients(NetworkCallback networkCallback, String type, String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
+    }
+
+    @Override
+    public void getCategories(NetworkCallback networkCallback, String type, String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
+    }
+
+    @Override
+    public void getCountries(NetworkCallback networkCallback, String type, String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
+    }
 }

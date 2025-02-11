@@ -57,7 +57,7 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
         );
 
         //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
-        cardAdapter = new CardAdapter(mealsList,getContext(), this,repository,mealPresenter,view);
+        cardAdapter = new CardAdapter( mealsList,getContext(), this,repository,mealPresenter,view);
         mealsList.observe(getViewLifecycleOwner(), meals -> {
             if (meals != null) {
                 cardAdapter.setMeals(meals);

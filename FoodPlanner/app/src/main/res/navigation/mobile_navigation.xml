@@ -59,6 +59,10 @@
         <action
             android:id="@+id/action_searchFragment_to_mealFragment"
             app:destination="@id/mealFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_filterFragment"
+            app:destination="@id/filterFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/calenderFragment"
@@ -80,5 +84,17 @@
         <action
             android:id="@+id/action_favoriteFragment_to_mealFragment"
             app:destination="@id/mealFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="com.example.foodplanner.app.views.fragments.FilterFragment"
+        android:label="fragment_filter"
+        tools:layout="@layout/fragment_filter" >
+        <action
+            android:id="@+id/action_filterFragment_to_mealFragment"
+            app:destination="@id/mealFragment" />
+        <argument
+            android:name="filter"
+            app:argType="com.example.foodplanner.data.meals.MealResponse" />
     </fragment>
 </navigation>

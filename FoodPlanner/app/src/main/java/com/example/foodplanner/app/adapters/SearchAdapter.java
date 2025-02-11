@@ -1,6 +1,7 @@
 package com.example.foodplanner.app.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.data.pojos.Data;
+import com.example.foodplanner.presenter.MealPresenter;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -20,10 +22,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private Context context;
     private Listener listener;
     private final List<String> favoriteMeals = new ArrayList<>();
-    public SearchAdapter(List<Data> dataList, Context context,Listener listener) {
+    RecyclerView recyclerView ;
+    private MealPresenter mealPresenter;
+    public SearchAdapter(List<Data> dataList, Context context,Listener listener, MealPresenter mealPresenter) {
         this.dataList = dataList;
         this.context = context;
         this.listener = listener;
+        this.mealPresenter = mealPresenter;
     }
 
     @NonNull
@@ -37,7 +42,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
         Data data = dataList.get(position);
         holder.btn.setText(data.getIngredient());
-
     }
 
     @Override
@@ -45,16 +49,41 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         return dataList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public MaterialButton btn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             btn = itemView.findViewById(R.id.btn_country);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (recyclerView != null) {
+                        int recyclerViewId = recyclerView.getId();
+                        String recyclerViewName = recyclerView.getResources().getResourceEntryName(recyclerViewId);
+                        if(recyclerViewName.equals("category_recycler")){
+                            mealPresenter.getCategories("categories",btn.getText().toString(),itemView);
+                        }else if(recyclerViewName.equals("ingredient_recycler")){
+                            mealPresenter.getIngredients("ingredients",btn.getText().toString(),itemView);
+                        }else if(recyclerViewName.equals("country_recycler")){
+                            mealPresenter.getCountries("countries",btn.getText().toString(),itemView);
+                        }
+                    }
+                    //
+                }
+            });
         }
+
+
     }
     public void updateData(List<Data> newNames) {
         dataList.clear();
         dataList.addAll(newNames);
         notifyDataSetChanged();
     }
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
 }

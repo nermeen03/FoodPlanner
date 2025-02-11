@@ -20,6 +20,9 @@ import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.meals.MealInfo;
 import com.example.foodplanner.data.pojos.Data;
+import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
+import com.example.foodplanner.data.repo.RemoteMealRepository;
+import com.example.foodplanner.presenter.MealPresenter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -110,7 +113,11 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
                 e.printStackTrace();
             }
         }
-        ingredientAdapter = new NamesAdapter(ingredients);
+        MealPresenter mealPresenter = new MealPresenter(
+                this,
+                RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
+        );
+        ingredientAdapter = new NamesAdapter(ingredients,mealPresenter);
         ingredientRecyclerView.setAdapter(ingredientAdapter);
         txtInstructions.setText(dataList.getStrInstructions());
         return view;
