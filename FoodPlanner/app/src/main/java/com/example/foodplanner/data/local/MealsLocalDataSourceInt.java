@@ -9,5 +9,5 @@ import java.util.List;
 public interface MealsLocalDataSourceInt {
     public void insetProd(Meal meal);
     public void deleteProd(Meal meal);
-    public LiveData<List<Meal>> getStoredMeals();
+    public LiveData<List<Meal>> getStoredMeals(String name);
 }

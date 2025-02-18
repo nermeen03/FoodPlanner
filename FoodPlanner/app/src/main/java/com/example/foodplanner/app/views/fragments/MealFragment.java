@@ -131,9 +131,4 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
     public void showError(String error) {
 
     }
-
-    @Override
-    public void onClick(Meal meal) {
-
-    }
 }

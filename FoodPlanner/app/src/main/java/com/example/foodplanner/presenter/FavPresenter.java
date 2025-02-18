@@ -17,12 +17,13 @@ public class FavPresenter implements NetworkCallback<Meal>{
         this.allProductsView = allProductsView;
         this.mealRepository = productRepository;
     }
-    public LiveData<List<Meal>> getProducts(){
-        return mealRepository.getProducts();
+    public LiveData<List<Meal>> getProducts(String name){
+        return mealRepository.getProducts(name);
     }
     public void addFav(Meal meal){
         mealRepository.insertOneProduct(meal);
     }
+    public void removeFav(Meal meal){mealRepository.deleteProduct(meal);}
     @Override
     public void onSuccessResult(List<Meal> meals) {
         allProductsView.showData(meals);

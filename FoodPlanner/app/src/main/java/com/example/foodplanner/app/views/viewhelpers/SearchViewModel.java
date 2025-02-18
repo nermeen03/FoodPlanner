@@ -3,6 +3,8 @@ package com.example.foodplanner.app.views.viewhelpers;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.foodplanner.app.views.fragments.SearchFragment;
 import com.example.foodplanner.data.pojos.Data;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +37,14 @@ public class SearchViewModel extends ViewModel {
     public LiveData<List<String>> getFilteredNames() {
         return filteredNames;
     }
-
+    SearchFragment searchFragment = new SearchFragment();
     public void updateCategories(List<Data> newCategories) {
         List<Data> current = categoriesList.getValue();
         if (current == null) {
             current = new ArrayList<>();
+            searchFragment.invisibleCategory();
+        }else{
+            searchFragment.visibleCategory();
         }
         current.addAll(newCategories);
         categoriesList.setValue(current);
@@ -49,6 +54,9 @@ public class SearchViewModel extends ViewModel {
         List<Data> current = ingredientsList.getValue();
         if (current == null) {
             current = new ArrayList<>();
+            searchFragment.invisibleIngredient();
+        }else{
+            searchFragment.visibleIngredient();
         }
         current.addAll(newIngredients);
         ingredientsList.setValue(current);
@@ -58,6 +66,9 @@ public class SearchViewModel extends ViewModel {
         List<Data> current = countriesList.getValue();
         if (current == null) {
             current = new ArrayList<>();
+            searchFragment.invisibleCountry();
+        }else{
+            searchFragment.visibleCountry();
         }
         current.addAll(newCountries);
         countriesList.setValue(current);

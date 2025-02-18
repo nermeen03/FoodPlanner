@@ -1,6 +1,7 @@
 package com.example.foodplanner.data.local;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -16,7 +17,6 @@ public class MealsLocalDataSource implements MealsLocalDataSourceInt {
     private MealsLocalDataSource(Context context){
         AppDataBase db = AppDataBase.getInstance(context.getApplicationContext());
         dao = db.getProductDAO();
-        storedMeals = dao.getAllProducts();
     }
     public static MealsLocalDataSource getInstance(Context context){
         if(local==null){
@@ -29,6 +29,7 @@ public class MealsLocalDataSource implements MealsLocalDataSourceInt {
             @Override
             public void run() {
                 dao.insertProduct(meal);
+                Log.d("TAG", "run: fav"+meal);
             }
         }).start();
     }
@@ -37,8 +38,8 @@ public class MealsLocalDataSource implements MealsLocalDataSourceInt {
             dao.deleteProduct(meal);
         }).start();
     }
-    public LiveData<List<Meal>> getStoredMeals(){
-        return storedMeals;
+    public LiveData<List<Meal>> getStoredMeals(String name){
+        return dao.getAllProducts(name);
     }
 
 }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id 'androidx.navigation.safeargs'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -40,6 +41,9 @@ dependencies {
     implementation libs.lifecycle.viewmodel.ktx
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation libs.play.services.base
+    implementation libs.firebase.auth
+    implementation libs.firebase.firestore
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -62,11 +66,23 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
 
-    // RxJava (for asynchronous handling)
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    // Firebase
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+    implementation "com.google.firebase:firebase-auth-ktx"
 
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    // Add the dependency for the Firebase SDK for Google Analytics
+    implementation("com.google.firebase:firebase-analytics")
+    //FileStore
+    implementation("com.google.firebase:firebase-firestore")
 
+
+    // Google services
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
+    // Google Authentication
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
 
 }

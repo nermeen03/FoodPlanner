@@ -1,6 +1,8 @@
 package com.example.foodplanner.app.views.fragments;
 
+import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.NamesAdapter;
 import com.example.foodplanner.app.adapters.SearchAdapter;
+import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
 import com.example.foodplanner.app.views.viewhelpers.AllDataView;
 import com.example.foodplanner.app.views.viewhelpers.SearchViewModel;
 import com.example.foodplanner.data.meals.Meal;
@@ -40,6 +43,9 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 
@@ -55,6 +61,11 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
 
     // Our ViewModel instance
     private SearchViewModel viewModel;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private ScrollView scrollable;
+    private ProgressBar catLoadingProgress;
+    private ProgressBar countLoadingProgress;
+    private ProgressBar ingLoadingProgress;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,39 +77,51 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         Log.i("TAG", "onCreateView: hgsdye");
+        scrollable = view.findViewById(R.id.scrollView);
+        catLoadingProgress = view.findViewById(R.id.cat_loading_progress);
+        countLoadingProgress = view.findViewById(R.id.count_loading_progress);
+        ingLoadingProgress = view.findViewById(R.id.ing_loading_progress);
+
+        networkChangeReceiver = new NetworkChangeReceiver(scrollable,this);
+        // Check the network connection initially
+        if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
+            scrollable.setVisibility(View.GONE);
+        } else {
+            scrollable.setVisibility(View.VISIBLE);
+
+
+        }
+        getActivity().registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         MealPresenter mealPresenter = new MealPresenter(
                 new MealFragment(),
                 RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
         );
 
-
         country_recycler = view.findViewById(R.id.country_recycler);
-//        country_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(country_recycler);
         countryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         country_recycler.setAdapter(countryAdapter);
 
         ingredient_recycler = view.findViewById(R.id.ingredient_recycler);
-//        ingredient_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(ingredient_recycler);
         ingredientAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         ingredient_recycler.setAdapter(ingredientAdapter);
 
         category_recycler = view.findViewById(R.id.category_recycler);
-//        category_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupRecyclerView(category_recycler);
         categoryAdapter = new SearchAdapter(new ArrayList<>(), getContext(), this,mealPresenter);
         category_recycler.setAdapter(categoryAdapter);
 
-        // Set up presenter (assuming it calls showData when results come in)
         presenter = new SearchPresenter(this, SearchRepository.getInstance(SearchRemoteDataSource.getInstance()));
         editText = view.findViewById(R.id.et_search_recipes);
         recyclerMealsName = view.findViewById(R.id.meal_name_recycler);
         recyclerMealsName.setLayoutManager(new LinearLayoutManager(getContext()));
-
-
         namesAdapter = new NamesAdapter(new ArrayList<>(),mealPresenter);
         recyclerMealsName.setAdapter(namesAdapter);
+
+
+
 
         // (Optional) Also observe other lists to update your SearchAdapters:
         viewModel.getCountriesList().observe(getViewLifecycleOwner(), countries -> {
@@ -110,13 +133,10 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         viewModel.getCategoriesList().observe(getViewLifecycleOwner(), categories -> {
             categoryAdapter.updateData(categories);
         });
-        viewModel.getAllNames().observe(getViewLifecycleOwner(), names -> {
-            // Use these names if needed elsewhere in your fragment.
-        });
         if (viewModel.getCategoriesList().getValue().isEmpty()) {
-            Log.i("TAG", "onCreateView: thhetrbd");
-            Log.i("TAG", "onCreateView: catdfscga"+viewModel.getCategoriesList().getValue());
+            Log.i("TAG", "onCreateView: list"+viewModel.getCategoriesList().getValue());
             presenter.getCategories("categories", null);
+
         }else{
             Log.i("TAG", "onCreateView: uuefrh");
         }
@@ -156,8 +176,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     @Override
     public void showData(List<Data> dataList) {
         if (dataList.isEmpty()) return;
-
-        // Check the type of the first element and update the corresponding list in the ViewModel.
         if (dataList.get(0) instanceof Ingredient) {
             viewModel.updateIngredients(dataList);
         } else if (dataList.get(0) instanceof Category) {
@@ -273,5 +291,38 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
             presenter.getIngredient("ingredients", null);
             isLoading = false;
         }
+    }
+    public void refreshPage() {
+        if (networkChangeReceiver.isNetworkAvailable(getContext())) {
+//            presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
+//            presenter.getRecommend();
+        } else {
+            Toast.makeText(getContext(), "No network connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public void visibleCategory(){
+        category_recycler.setVisibility(View.VISIBLE);
+        catLoadingProgress.setVisibility(View.GONE);
+    }
+    public void visibleCountry(){
+        country_recycler.setVisibility(View.VISIBLE);
+        countLoadingProgress.setVisibility(View.GONE);
+    }
+    public void visibleIngredient(){
+        ingredient_recycler.setVisibility(View.VISIBLE);
+        ingLoadingProgress.setVisibility(View.GONE);
+    }
+
+    public void invisibleCategory(){
+        catLoadingProgress.setVisibility(View.VISIBLE);
+        category_recycler.setVisibility(View.GONE);
+    }
+    public void invisibleCountry(){
+        countLoadingProgress.setVisibility(View.VISIBLE);
+        country_recycler.setVisibility(View.GONE);
+    }
+    public void invisibleIngredient(){
+        ingLoadingProgress.setVisibility(View.VISIBLE);
+        ingredient_recycler.setVisibility(View.GONE);
     }
 }

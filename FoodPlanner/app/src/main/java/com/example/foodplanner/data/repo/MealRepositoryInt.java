@@ -8,7 +8,7 @@ import com.example.foodplanner.data.remote.network.NetworkCallback;
 import java.util.List;
 
 public interface MealRepositoryInt {
-    public LiveData<List<Meal>> getProducts();
+    public LiveData<List<Meal>> getProducts(String name);
     public void getProducts(NetworkCallback networkCallback,String type,String name);
     public void insertOneProduct(Meal meal);
     public void getRecommend(NetworkCallback networkCallback);

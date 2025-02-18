@@ -58,8 +58,11 @@ public class CalenderFragment extends Fragment implements Listener {
 
         // Observe meal plans for the selected day
         calendarViewModel.getMealPlansForDay().observe(getViewLifecycleOwner(), mealPlans -> {
-            mealPlanAdapter.setMealPlans(mealPlans);
+            String selectedDate = calendarViewModel.getSelectedDayFormatted().getValue();
+            mealPlanAdapter.setMealPlans(mealPlans, selectedDate);
         });
+
+
 
         // Find the CalendarView (if available in your layout)
         CalendarView calendarView = view.findViewById(R.id.calendarView);
@@ -90,65 +93,65 @@ public class CalenderFragment extends Fragment implements Listener {
         calendar.add(Calendar.DAY_OF_WEEK, 7);
         long weekEnd = calendar.getTimeInMillis();
 
-        Disposable disposable = io.reactivex.Single.fromCallable(() -> {
-                    List<Event> events = new ArrayList<>();
-                    Uri eventsUri = CalendarContract.Events.CONTENT_URI;
-                    String[] projection = {
-                            CalendarContract.Events._ID,
-                            CalendarContract.Events.TITLE,
-                            CalendarContract.Events.DTSTART,
-                            CalendarContract.Events.DTEND
-                    };
-
-                    String selection = CalendarContract.Events.DTSTART + " >= ? AND " +
-                            CalendarContract.Events.DTSTART + " <= ?";
-                    String[] selectionArgs = new String[] { String.valueOf(weekStart), String.valueOf(weekEnd) };
-
-                    Cursor cursor = getActivity().getContentResolver().query(
-                            eventsUri,
-                            projection,
-                            selection,
-                            selectionArgs,
-                            CalendarContract.Events.DTSTART + " ASC"
-                    );
-
-                    if (cursor == null) {
-                        return events;
-                    }
-
-                    // Log available column names for debugging
-                    String[] columnNames = cursor.getColumnNames();
-                    for (String col : columnNames) {
-                        Log.d("CalendarFragment", "Returned Column: " + col);
-                    }
-
-                    int idIndex = cursor.getColumnIndex(CalendarContract.Events._ID);
-                    int titleIndex = cursor.getColumnIndex(CalendarContract.Events.TITLE);
-                    int dtStartIndex = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
-
-                    if (idIndex == -1 || titleIndex == -1 || dtStartIndex == -1) {
-                        Log.e("CalendarFragment", "One or more required columns were not found in the cursor.");
-                        cursor.close();
-                        return events;
-                    }
-
-                    while (cursor.moveToNext()) {
-                        long id = cursor.getLong(idIndex);
-                        String title = cursor.getString(titleIndex);
-                        long dtStart = cursor.getLong(dtStartIndex);
-                        events.add(new Event(id, title, dtStart));
-                    }
-                    cursor.close();
-                    return events;
-                })
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(events -> {
-                    calendarEvents = events;
-                    // Update your calendar UI if needed.
-                }, throwable -> {
-                    throwable.printStackTrace();
-                });
+//        Disposable disposable = io.reactivex.Single.fromCallable(() -> {
+//                    List<Event> events = new ArrayList<>();
+//                    Uri eventsUri = CalendarContract.Events.CONTENT_URI;
+//                    String[] projection = {
+//                            CalendarContract.Events._ID,
+//                            CalendarContract.Events.TITLE,
+//                            CalendarContract.Events.DTSTART,
+//                            CalendarContract.Events.DTEND
+//                    };
+//
+//                    String selection = CalendarContract.Events.DTSTART + " >= ? AND " +
+//                            CalendarContract.Events.DTSTART + " <= ?";
+//                    String[] selectionArgs = new String[] { String.valueOf(weekStart), String.valueOf(weekEnd) };
+//
+//                    Cursor cursor = getActivity().getContentResolver().query(
+//                            eventsUri,
+//                            projection,
+//                            selection,
+//                            selectionArgs,
+//                            CalendarContract.Events.DTSTART + " ASC"
+//                    );
+//
+//                    if (cursor == null) {
+//                        return events;
+//                    }
+//
+//                    // Log available column names for debugging
+//                    String[] columnNames = cursor.getColumnNames();
+//                    for (String col : columnNames) {
+//                        Log.d("CalendarFragment", "Returned Column: " + col);
+//                    }
+//
+//                    int idIndex = cursor.getColumnIndex(CalendarContract.Events._ID);
+//                    int titleIndex = cursor.getColumnIndex(CalendarContract.Events.TITLE);
+//                    int dtStartIndex = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
+//
+//                    if (idIndex == -1 || titleIndex == -1 || dtStartIndex == -1) {
+//                        Log.e("CalendarFragment", "One or more required columns were not found in the cursor.");
+//                        cursor.close();
+//                        return events;
+//                    }
+//
+//                    while (cursor.moveToNext()) {
+//                        long id = cursor.getLong(idIndex);
+//                        String title = cursor.getString(titleIndex);
+//                        long dtStart = cursor.getLong(dtStartIndex);
+//                        events.add(new Event(id, title, dtStart));
+//                    }
+//                    cursor.close();
+//                    return events;
+//                })
+//                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+//                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+//                .subscribe(events -> {
+//                    calendarEvents = events;
+//                    // Update your calendar UI if needed.
+//                }, throwable -> {
+//                    throwable.printStackTrace();
+//                });
     }
 
     @Override

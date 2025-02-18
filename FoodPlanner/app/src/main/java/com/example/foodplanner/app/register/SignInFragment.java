@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.databinding.FragmentMainBinding;
@@ -28,19 +31,37 @@ import com.google.android.material.snackbar.Snackbar;
  */
 public class SignInFragment extends Fragment {
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private EditText emailEditText, passwordEditText;
+    private Button signInButton;
+    private FirebaseHelper firebaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sign_in, container, false);
+        View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
+
+        // Initialize views
+        emailEditText = view.findViewById(R.id.etEmail);
+        passwordEditText = view.findViewById(R.id.etPassword);
+        signInButton = view.findViewById(R.id.btnLogin);
+
+        firebaseHelper = new FirebaseHelper();
+
+        // Sign-up button click listener
+        signInButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+
+            // Validate input fields
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            firebaseHelper.signIn(email,password,view,getContext());
+
+        });
+
+        return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
 }

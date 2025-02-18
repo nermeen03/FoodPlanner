@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.data.local.plans.MealPlan;
 
 import java.text.DateFormat;
@@ -19,8 +20,10 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPl
 
     private List<MealPlan> mealPlans = new ArrayList<>();
     private Listener listener;
+    FirebaseHelper firebaseHelper;
     public MealPlanAdapter(Listener listener){
         this.listener = listener;
+        firebaseHelper = new FirebaseHelper();
     }
 
     @NonNull
@@ -38,6 +41,8 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPl
         holder.imgRemove.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onRemoveMealPlan(mealPlan);
+                firebaseHelper.deleteMealFromPlan(firebaseHelper.fetchUserDetails(),mealPlan.getMealId(),mealPlan.getMealName());
+
             }
         });
     }
@@ -47,8 +52,11 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPl
         return mealPlans.size();
     }
 
-    public void setMealPlans(List<MealPlan> mealPlans) {
+    public void setMealPlans(List<MealPlan> mealPlans,String date) {
         this.mealPlans = mealPlans;
+        if(mealPlans.isEmpty()){
+            firebaseHelper.getMealPlan(firebaseHelper.fetchUserDetails(),date);
+        }
         notifyDataSetChanged();
     }
 

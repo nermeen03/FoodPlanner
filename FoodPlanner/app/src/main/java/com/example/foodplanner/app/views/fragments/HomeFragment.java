@@ -1,11 +1,17 @@
 package com.example.foodplanner.app.views.fragments;
 
+import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
+import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
@@ -25,6 +33,7 @@ import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
+import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.presenter.HomePresenter;
 import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.presenter.MealPresenter;
@@ -47,6 +56,11 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     private boolean isLoading = false;
     private boolean isRecommend = false;
     private MealPlanRepository mealPlanRepository;
+    private FavPresenter favPresenter;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private ScrollView scrollable;
+    private ProgressBar recLoadingProgress;
+    private ProgressBar mealLoadingProgress;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,9 +71,30 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
         bottomNavigationView.setVisibility(View.VISIBLE);
+
+        scrollable = view.findViewById(R.id.scrollable);
+        recLoadingProgress = view.findViewById(R.id.reco_loading_progress);
+        mealLoadingProgress = view.findViewById(R.id.meal_loading_progress);
+
+        networkChangeReceiver = new NetworkChangeReceiver(scrollable,this);
+
+        // Check the network connection initially
+        if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
+            scrollable.setVisibility(View.GONE);
+        } else {
+            scrollable.setVisibility(View.VISIBLE);
+            recLoadingProgress.setVisibility(View.VISIBLE);
+            mealLoadingProgress.setVisibility(View.VISIBLE);
+        }
+
+        getActivity().registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+        for (char c = 'A'; c <= 'Z'; c++) {
+            letters.add(String.valueOf(c));
+        }
+
         recommend_recyclerView = view.findViewById(R.id.recommend_recyclerView);
         recommend_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -72,14 +107,21 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                 mealFragment,
                 RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
         );
-
+        FirebaseHelper firebaseHelper = new FirebaseHelper();
+        String user = firebaseHelper.fetchUserDetails();
+        Log.d("TAG", "onCreateView: "+user);
         //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
-        mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository,mealPresenter,view);
-        recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository,mealPresenter,view);
+        favPresenter = new FavPresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
+
+        mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
+        recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
         presenter = new HomePresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
 
         recommend_recyclerView.setAdapter(recommendAdapter);
         meal_recyclerView.setAdapter(mealsAdapter);
+
+        recommend_recyclerView.setVisibility(View.GONE);
+        meal_recyclerView.setVisibility(View.GONE);
 
         recyclerListener(meal_recyclerView);
 
@@ -91,10 +133,11 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         viewModel.getRecommendList().observe(getViewLifecycleOwner(), recommends -> {
             recommendAdapter.updateData(recommends);
         });
-        if (viewModel.getMealsList().getValue().isEmpty()) {
-            presenter.getProducts("letter", "a");
-            presenter.getRecommend();
-        }
+//        if (viewModel.getMealsList().getValue().isEmpty()&&networkChangeReceiver.isNetworkAvailable(getContext())) {
+//            presenter.getProducts("letter", "a");
+//            presenter.getRecommend();
+//
+//        }
 
         return view;
     }
@@ -108,10 +151,14 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         if (meals.size() > 1) {
             if (meals != null && !meals.isEmpty()) {
                 viewModel.updateMealsList(meals);
+                meal_recyclerView.setVisibility(View.VISIBLE);
+                mealLoadingProgress.setVisibility(View.GONE);
             }
         } else {
             if(meals.get(0) instanceof Meal) {
                 viewModel.updateRecommendList(meals);
+                recommend_recyclerView.setVisibility(View.VISIBLE);
+                recLoadingProgress.setVisibility(View.GONE);
             }
             else{
                 Log.i("TAG", "showData: hahda"+meals);
@@ -121,16 +168,13 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
 
     @Override
     public void showError(String error) {
-        Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+        //here the visibility
+        Toast.makeText(getContext(), "Check your connection", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onClick(Meal meal) {
-        presenter.addFav(meal);
-    }
-    @Override
     public void onAddClick(Meal meal){
-        onClick(meal);
+        presenter.addFav(meal);
     }
 
     private void recyclerListener(RecyclerView recyclerView) {
@@ -189,5 +233,21 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
             }
         }
     }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (networkChangeReceiver != null) {
+            getActivity().unregisterReceiver(networkChangeReceiver);
+        }
+    }
+    public void refreshPage() {
+        if (networkChangeReceiver.isNetworkAvailable(getContext())) {
+            presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
+            presenter.getRecommend();
+        } else {
+            Toast.makeText(getContext(), "No network connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 }

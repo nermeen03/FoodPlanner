@@ -7,12 +7,14 @@ import androidx.room.PrimaryKey;
 public class MealPlan {
     @PrimaryKey(autoGenerate = true)
     private int id;
+    private String mealId;
     private String mealName;
     private long date;
 
     private long calendarEventId;
 
-    public MealPlan(String mealName, long date, long calendarEventId) {
+    public MealPlan(String mealId,String mealName, long date, long calendarEventId) {
+        this.mealId = mealId;
         this.mealName = mealName;
         this.date = date;
         this.calendarEventId = calendarEventId;
@@ -26,5 +28,13 @@ public class MealPlan {
 
     public long getCalendarEventId() {
         return calendarEventId;
+    }
+
+    public String getMealId() {
+        return mealId;
+    }
+
+    public void setMealId(String mealId) {
+        this.mealId = mealId;
     }
 }

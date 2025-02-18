@@ -1,9 +1,12 @@
 package com.example.foodplanner.app.adapters;
 
+import static com.example.foodplanner.app.navigation.NavigationButton.showLoginDialog;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +18,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.repo.MealPlanRepository;
+import com.example.foodplanner.data.user.SessionManager;
+import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.presenter.MealPresenter;
 
 import java.util.ArrayList;
@@ -34,34 +41,39 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     private List<Meal> meals = new ArrayList<>();
     private Context context;
     private Listener listener;
-    private final List<String> favoriteMeals = new ArrayList<>();
+    private List<Meal> favoriteMeals = new ArrayList<>();
     private MealPlanRepository mealPlanRepository;
     private MealPresenter mealPresenter;
     private View view;
-    private LiveData<List<Meal>> mealLive;
+    private LiveData<List<Meal>> favoriteMealsLiveData;
+    FirebaseHelper firebaseHelper;
     public CardAdapter(List<Meal> meals,
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
-                       MealPresenter mealPresenter, View view) {
+                       MealPresenter mealPresenter, View view,
+                       LiveData<List<Meal>> favoriteMealsLiveData) {
         this.meals = meals;
         this.context = context;
         this.listener = listener;
         this.mealPlanRepository = mealPlanRepository;
         this.mealPresenter = mealPresenter;
         this.view = view;
+        this.favoriteMealsLiveData = favoriteMealsLiveData;
+        firebaseHelper = new FirebaseHelper();
     }
-    public CardAdapter(LiveData<List<Meal>> meals,
+    public CardAdapter(LiveData<List<Meal>> favoriteMealsLiveData,
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
                        MealPresenter mealPresenter, View view) {
-        this.mealLive = meals;
+        this.favoriteMealsLiveData = favoriteMealsLiveData;
         this.context = context;
         this.listener = listener;
         this.mealPlanRepository = mealPlanRepository;
         this.mealPresenter = mealPresenter;
         this.view = view;
+        firebaseHelper = new FirebaseHelper();
     }
 
     public void setMeals(List<Meal> meals) {
@@ -78,35 +90,58 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull CardAdapter.ViewHolder holder, int position) {
         Meal meal = meals.get(position);
+        SessionManager sessionManager = new SessionManager(view.getContext());
+        String savedUserId = sessionManager.getUserId();
+        favoriteMealsLiveData.observe((LifecycleOwner) context, favoriteMeals -> {
+            this.favoriteMeals = favoriteMeals;
+            if (favoriteMeals.contains(meal)) {
+                holder.imgFav.setImageResource(R.drawable.checked_fav);
+                Log.d("TAG", "onBindViewHolder: hhghg");
+            } else {
+                holder.imgFav.setImageResource(R.drawable.favorite);
+            }
+        });
         holder.txtName.setText(meal.getStrMeal());
         holder.txtDes.setText(String.format(meal.getIdMeal()));
         if (meal.getStrMealThumb() != null) {
             Glide.with(context)
                     .load(meal.getStrMealThumb())
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
+                    .placeholder(R.drawable.food)
+                    .error(R.drawable.food)
                     .into(holder.img);
         }
-        if (favoriteMeals.contains(meal.getIdMeal())) {
-            holder.imgFav.setImageResource(R.drawable.checked_fav);
-        } else {
-            holder.imgFav.setImageResource(R.drawable.favorite);
-        }
+
 
         holder.imgFav.setOnClickListener(v -> {
-            if (!favoriteMeals.contains(meal.getIdMeal())) {
-                listener.onAddClick(meal);
-                favoriteMeals.add(meal.getIdMeal());
-            } else {
-                listener.onRemoveClick(meal);
-                favoriteMeals.remove(meal.getIdMeal());
+            if (!"guest".equals(savedUserId)) {
+                if (!favoriteMeals.contains(meal)) {
+                    holder.imgFav.setImageResource(R.drawable.checked_fav);
+                    meal.setUser(firebaseHelper.fetchUserDetails());
+                    Log.d("TAG", "onBindViewHolder: sn" + meal.getUser());
+                    listener.onAddClick(meal);
+                    favoriteMeals.add(meal);
+                    firebaseHelper.saveFavoriteMeal(meal.getUser(), meal.getIdMeal(), meal.getStrMeal(), meal.getStrMealThumb());
+                    notifyDataSetChanged();
+                    Log.d("TAG", "onBindViewHolder: heere");
+                } else {
+                    holder.imgFav.setImageResource(R.drawable.favorite);
+                    Log.d("TAG", "onBindViewHolder: jhg");
+                    firebaseHelper.deleteFavoriteMeal(firebaseHelper.fetchUserDetails(), meal.getIdMeal());
+                    listener.onRemoveClick(meal);
+                    favoriteMeals.remove(meal);
+                    notifyDataSetChanged();
+                    Log.d("TAG", "onBindViewHolder: hhhu");
+                }
+            }else{
+                showLoginDialog(view);
             }
-            notifyDataSetChanged();
         });
-        holder.imgAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.imgAdd.setOnClickListener(v -> {
+            if (!"guest".equals(savedUserId)) {
                 showWeekDialog(meal);
+            }
+            else{
+                showLoginDialog(view);
             }
         });
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
@@ -184,18 +219,19 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                                     new String[]{Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR},
                                     1001);
                         } else {
-                            addMealToCalendar(context, meal.getStrMeal(), eventStartTime, eventEndTime);
+                            addMealToCalendar(context, meal.getIdMeal(), meal.getStrMeal(), eventStartTime, eventEndTime);
                         }
-                        MealPlan mealPlan = new MealPlan(meal.getStrMeal(), eventStartTime,-1);
+                        MealPlan mealPlan = new MealPlan(meal.getIdMeal(), meal.getStrMeal(), eventStartTime,-1);
 
                         // Insert the meal plan into your local database.
+                        firebaseHelper.saveMealPlan(firebaseHelper.fetchUserDetails(),meal.getIdMeal(),meal.getStrMeal());
                         mealPlanRepository.insertMealPlanIfNotExists(mealPlan);
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-    public void addMealToCalendar(Context context, String mealName, long startTimeMillis, long endTimeMillis) {
+    public void addMealToCalendar(Context context,String mealId, String mealName, long startTimeMillis, long endTimeMillis) {
         long calendarId = getDefaultCalendarId(context);
         if (calendarId == -1) {
             Toast.makeText(context, "No calendar available", Toast.LENGTH_SHORT).show();
@@ -216,7 +252,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         if (uri != null) {
             long eventId = Long.parseLong(uri.getLastPathSegment());
             // Now, when you create the MealPlan, include the eventId.
-            MealPlan mealPlan = new MealPlan(mealName, startTimeMillis, eventId);
+            MealPlan mealPlan = new MealPlan(mealId,mealName, startTimeMillis, eventId);
             mealPlanRepository.insertMealPlanIfNotExists(mealPlan);
         }
     }

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.foodplanner.data.pojos.Data;
@@ -21,14 +22,18 @@ public class Meal implements Data, Serializable {
     private String strMeal;
     private String strMealThumb;
 
+    private String user;
+
     // Default constructor (required for Room)
     public Meal() {}
 
     // Custom constructor
-    public Meal(@NonNull String idMeal, String strMeal, String strMealThumb) {
+    @Ignore
+    public Meal(@NonNull String idMeal, String strMeal, String strMealThumb,String user) {
         this.idMeal = idMeal;
         this.strMeal = strMeal;
         this.strMealThumb = strMealThumb;
+        this.user = user;
     }
 
     // Getter methods
@@ -59,4 +64,11 @@ public class Meal implements Data, Serializable {
         this.strMealThumb = strMealThumb;
     }
 
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
 }

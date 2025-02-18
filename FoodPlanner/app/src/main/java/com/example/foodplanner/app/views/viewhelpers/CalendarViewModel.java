@@ -10,14 +10,17 @@ import androidx.lifecycle.Transformations;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.repo.MealPlanRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class CalendarViewModel extends AndroidViewModel {
     private MealPlanRepository repository;
     private final MutableLiveData<Long> selectedDay = new MutableLiveData<>();
     // LiveData for meal plans for the selected day
     private final LiveData<List<MealPlan>> mealPlansForDay;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     public CalendarViewModel(@NonNull Application application) {
         super(application);
@@ -31,7 +34,6 @@ public class CalendarViewModel extends AndroidViewModel {
 //        long weekEnd = calendar.getTimeInMillis();
 //
 //        mealPlansLiveData = repository.getMealPlansForWeek(weekStart, weekEnd);
-        repository = new MealPlanRepository(application);
         mealPlansForDay = Transformations.switchMap(selectedDay, day -> {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(day);
@@ -49,8 +51,16 @@ public class CalendarViewModel extends AndroidViewModel {
         selectedDay.setValue(dayInMillis);
     }
 
+    public LiveData<Long> getSelectedDay() {
+        return selectedDay;
+    }
+
+
     public LiveData<List<MealPlan>> getMealPlansForDay() {
         return mealPlansForDay;
+    }
+    public LiveData<String> getSelectedDayFormatted() {
+        return Transformations.map(selectedDay, day -> dateFormat.format(day));
     }
 
 }

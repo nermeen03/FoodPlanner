@@ -1,10 +1,12 @@
 package com.example.foodplanner.app.activity;
 
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,10 @@ import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.CardAdapter;
+import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
+import com.example.foodplanner.data.user.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -31,7 +35,6 @@ public class SplashFragment extends Fragment {
     private CardAdapter mealAdapter;
 
     private List<Meal> productList = new ArrayList<>();
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,8 +96,25 @@ public class SplashFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        SessionManager sessionManager = new SessionManager(getContext());
+        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
         new Handler().postDelayed(() -> {
-            Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_homeFragment);
+            if(networkChangeReceiver.isNetworkAvailable(getContext())) {
+                String savedUserId = sessionManager.getUserId();
+                Log.d("TAG", "onViewCreated: saved" + savedUserId);
+                if (savedUserId != null && !savedUserId.isEmpty()) {
+                    Log.d("TAG", "User is logged in.");
+                    // Navigate to mainFragment
+                    Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_homeFragment);
+                } else {
+                    Log.d("TAG", "No saved user. Redirecting to login.");
+                    // Navigate to loginFragment if no user is found
+                    Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
+                }
+            }
+            else{
+                Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_homeFragment);
+            }
         }, 1000);
     }
 }

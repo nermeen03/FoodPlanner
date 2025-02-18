@@ -2,9 +2,6 @@ package com.example.foodplanner.data.repo;
 
 
 import android.app.Application;
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.List;
@@ -13,7 +10,6 @@ import java.util.concurrent.Executors;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.foodplanner.app.activity.MainActivity;
 import com.example.foodplanner.data.local.AppDataBase;
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.local.plans.MealPlanDao;

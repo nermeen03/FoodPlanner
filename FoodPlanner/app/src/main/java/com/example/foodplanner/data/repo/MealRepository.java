@@ -26,8 +26,8 @@ public class MealRepository implements MealRepositoryInt{
     }
 
     @Override
-    public LiveData<List<Meal>> getProducts() {
-        return productLocalDataSource.getStoredMeals();
+    public LiveData<List<Meal>> getProducts(String name) {
+        return productLocalDataSource.getStoredMeals(name);
     }
 
     @Override

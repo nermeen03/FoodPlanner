@@ -15,14 +15,18 @@ import android.view.ViewGroup;
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.app.adapters.Listener;
+import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
+import com.example.foodplanner.data.local.MealsLocalDataSource;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.meals.MealInfo;
 import com.example.foodplanner.data.meals.MealResponse;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.MealPlanRepository;
+import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
+import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.presenter.MealPresenter;
 
 import java.util.ArrayList;
@@ -37,6 +41,7 @@ public class FilterFragment extends Fragment implements AllMealsView, Listener{
     private RecyclerView filter_recycler;
     private CardAdapter cardAdapter;
     private List<Meal> dataList;
+    private FavPresenter favPresenter;
 
 
     @Override
@@ -57,7 +62,12 @@ public class FilterFragment extends Fragment implements AllMealsView, Listener{
 
         filter_recycler = view.findViewById(R.id.filter_recycler);
         filter_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        cardAdapter = new CardAdapter(mealList,getContext(),this,repository,mealPresenter,view);
+
+        FirebaseHelper firebaseHelper = new FirebaseHelper();
+        String user = firebaseHelper.fetchUserDetails();
+
+        favPresenter = new FavPresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
+        cardAdapter = new CardAdapter(mealList,getContext(),this,repository,mealPresenter,view,favPresenter.getProducts(user));
         filter_recycler.setAdapter(cardAdapter);
 
         return view;
@@ -70,11 +80,6 @@ public class FilterFragment extends Fragment implements AllMealsView, Listener{
 
     @Override
     public void showError(String error) {
-
-    }
-
-    @Override
-    public void onClick(Meal meal) {
 
     }
 }
