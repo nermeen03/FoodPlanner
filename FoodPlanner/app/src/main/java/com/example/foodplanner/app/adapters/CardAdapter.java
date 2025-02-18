@@ -102,7 +102,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             }
         });
         holder.txtName.setText(meal.getStrMeal());
-        holder.txtDes.setText(String.format(meal.getIdMeal()));
         if (meal.getStrMealThumb() != null) {
             Glide.with(context)
                     .load(meal.getStrMealThumb())
@@ -159,14 +158,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView img;
-        public TextView txtName, txtDes;
+        public TextView txtName;
         public ImageView imgFav,imgAdd;
         private Button btnMore;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.meal_img);
             txtName = itemView.findViewById(R.id.meal_name);
-            txtDes = itemView.findViewById(R.id.meal_desc);
             imgFav = itemView.findViewById(R.id.imgFav);
             imgAdd = itemView.findViewById(R.id.imgAdd);
             btnMore = itemView.findViewById(R.id.meal_btn);

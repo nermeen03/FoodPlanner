@@ -62,18 +62,9 @@ android:layout_marginStart="30dp"
             android:textAlignment="center"
             />
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:id="@+id/meal_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textAlignment="center"/>
-
         <Button
             android:id="@+id/meal_btn"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"

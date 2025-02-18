@@ -67,6 +67,9 @@
         <action
             android:id="@+id/action_homeFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -79,12 +82,19 @@
         <action
             android:id="@+id/action_searchFragment_to_filterFragment"
             app:destination="@id/filterFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
 
     </fragment>
     <fragment
         android:id="@+id/calenderFragment"
         android:name="com.example.foodplanner.app.views.fragments.CalenderFragment"
-        android:label="CalenderFragment" />
+        android:label="CalenderFragment" >
+        <action
+            android:id="@+id/action_calenderFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mealFragment"
         android:name="com.example.foodplanner.app.views.fragments.MealFragment"
@@ -101,6 +111,9 @@
         <action
             android:id="@+id/action_favoriteFragment_to_mealFragment"
             app:destination="@id/mealFragment" />
+        <action
+            android:id="@+id/action_favoriteFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/filterFragment"
@@ -114,4 +127,8 @@
             android:name="filter"
             app:argType="com.example.foodplanner.data.meals.MealResponse" />
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.foodplanner.app.register.ProfileFragment"
+        android:label="ProfileFragment" />
 </navigation>

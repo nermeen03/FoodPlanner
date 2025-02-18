@@ -52,7 +52,7 @@ public class MainFragment extends Fragment {
         SessionManager sessionManager = new SessionManager(getContext());
         Button btnGuest = view.findViewById(R.id.btnGuest);
         btnGuest.setOnClickListener(v ->{
-            sessionManager.saveUser("guest");
+            sessionManager.saveUser("guest","null","null");
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_homeFragment);
         });
 

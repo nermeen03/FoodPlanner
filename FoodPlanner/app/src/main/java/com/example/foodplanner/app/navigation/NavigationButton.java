@@ -41,7 +41,12 @@ public class NavigationButton {
                     }
                     return true;
                 } else if (itemId == R.id.page_5) {
-                    // Handle Logout click here
+                    if ("guest".equals(savedUserId)) {
+                        showLoginDialog(view);
+                    }
+                    else {
+                        Navigation.findNavController(view).navigate(R.id.profileFragment);
+                    }
                     return true;
                 }
                 return false;
@@ -54,7 +59,7 @@ public class NavigationButton {
                 .setTitle("Guest User")
                 .setMessage("You are currently logged in as a guest. Would you like to log in?")
                 .setPositiveButton("Login", (dialog, which) -> {
-                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_signInFragment);
+                    Navigation.findNavController(view).navigate(R.id.signInFragment);
                 })
                 .setNegativeButton("Cancel", null)
                 .create()

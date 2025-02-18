@@ -53,7 +53,7 @@ public class MealPresenter implements NetworkCallback<Data> {
     public void onSuccessResult(List<Data> data) {
         if(view!=null){
             if(Navigation.findNavController(view).getCurrentDestination().getId() == R.id.homeFragment){
-                Log.d("TAG", "onSuccessResult: fuuuu");
+                Log.d("TAG", "onSuccessResult: fuuuu"+data);
                 MealInfo dataArray = (MealInfo) data.get(0);
                 Navigation.findNavController(view).navigate(HomeFragmentDirections.actionHomeFragmentToMealFragment(dataArray));
                 mealFragment.showData(data);

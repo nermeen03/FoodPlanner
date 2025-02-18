@@ -3,6 +3,7 @@ package com.example.foodplanner.app.navigation;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View;
@@ -46,8 +47,16 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        if (cm != null) {
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            boolean isInternetAllowed = sharedPreferences.getBoolean("InternetAccess", true);
+
+            return networkInfo != null && networkInfo.isConnected() && isInternetAllowed;
+        }
+
+        return false;
     }
+
 }
 

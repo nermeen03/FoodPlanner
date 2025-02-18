@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.NamesAdapter;
 import com.example.foodplanner.app.adapters.SearchAdapter;
@@ -44,6 +46,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -66,6 +69,7 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     private ProgressBar catLoadingProgress;
     private ProgressBar countLoadingProgress;
     private ProgressBar ingLoadingProgress;
+    private ImageView loading_image;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +82,9 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         Log.i("TAG", "onCreateView: hgsdye");
         scrollable = view.findViewById(R.id.scrollView);
+        loading_image = view.findViewById(R.id.loading_image);
+
+
         catLoadingProgress = view.findViewById(R.id.cat_loading_progress);
         countLoadingProgress = view.findViewById(R.id.count_loading_progress);
         ingLoadingProgress = view.findViewById(R.id.ing_loading_progress);
@@ -86,9 +93,14 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         // Check the network connection initially
         if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
             scrollable.setVisibility(View.GONE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.wait)
+                    .into(loading_image);
+            loading_image.setVisibility(View.VISIBLE);
         } else {
             scrollable.setVisibility(View.VISIBLE);
-
+            loading_image.setVisibility(View.GONE);
 
         }
         getActivity().registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -120,7 +132,12 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         namesAdapter = new NamesAdapter(new ArrayList<>(),mealPresenter);
         recyclerMealsName.setAdapter(namesAdapter);
 
+        if(scrollable.getVisibility()==View.VISIBLE){
+            invisibleCategory();
+            invisibleIngredient();
+            invisibleCountry();
 
+        }
 
 
         // (Optional) Also observe other lists to update your SearchAdapters:
@@ -178,10 +195,13 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         if (dataList.isEmpty()) return;
         if (dataList.get(0) instanceof Ingredient) {
             viewModel.updateIngredients(dataList);
+            visibleIngredient();
         } else if (dataList.get(0) instanceof Category) {
             viewModel.updateCategories(dataList);
+            visibleCategory();
         } else if (dataList.get(0) instanceof Countries) {
             viewModel.updateCountries(dataList);
+            visibleCountry();
         } else if (dataList.get(0) instanceof Meal) {
             // For Meals, update the list of all names
             List<String> names = new ArrayList<>();

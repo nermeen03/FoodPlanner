@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
 import com.example.foodplanner.app.register.FirebaseHelper;
@@ -61,6 +63,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     private ScrollView scrollable;
     private ProgressBar recLoadingProgress;
     private ProgressBar mealLoadingProgress;
+    private ImageView loading_image;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +78,8 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         bottomNavigationView.setVisibility(View.VISIBLE);
 
         scrollable = view.findViewById(R.id.scrollable);
+        loading_image = view.findViewById(R.id.loading_image);
+
         recLoadingProgress = view.findViewById(R.id.reco_loading_progress);
         mealLoadingProgress = view.findViewById(R.id.meal_loading_progress);
 
@@ -83,8 +88,14 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         // Check the network connection initially
         if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
             scrollable.setVisibility(View.GONE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.wait)
+                    .into(loading_image);
+            loading_image.setVisibility(View.VISIBLE);
         } else {
             scrollable.setVisibility(View.VISIBLE);
+            loading_image.setVisibility(View.GONE);
             recLoadingProgress.setVisibility(View.VISIBLE);
             mealLoadingProgress.setVisibility(View.VISIBLE);
         }

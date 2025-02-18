@@ -145,7 +145,7 @@ public class FirebaseHelper {
                             Log.d("TAG", "createUserWithEmail: success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
-                                sessionManager.saveUser(user.getUid());
+                                sessionManager.saveUser(user.getUid(),user.getDisplayName(),user.getEmail());
                                 User newUser = new User(user.getUid(), name, email);
                                 saveUserToFireStore(newUser);
                                 Navigation.findNavController(view).navigate(R.id.action_signUpFragment_to_homeFragment);
@@ -195,7 +195,7 @@ public class FirebaseHelper {
                             if (user!=null){
 //                                User newUser = new User(user.getUid(), user.getDisplayName(), email);
 //                                saveUserToFireStore(newUser);
-                                sessionManager.saveUser(user.getUid());
+                                sessionManager.saveUser(user.getUid(),user.getDisplayName(),user.getEmail());
                                 Navigation.findNavController(view).navigate(R.id.action_signInFragment_to_homeFragment);
                             }
                             //updateUI(user);
