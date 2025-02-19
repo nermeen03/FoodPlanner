@@ -20,7 +20,7 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt {
     private static final String BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
     private final RemotePaths remotePaths;
     private static MealRemoteDataSource mealRemoteDataSource = null;
-    private final CompositeDisposable disposable = new CompositeDisposable(); // RxJava Disposable
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     private MealRemoteDataSource() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -64,8 +64,8 @@ public class MealRemoteDataSource implements MealRemoteDataSourceInt {
 
         if (observable != null) {
             disposable.add(observable
-                    .subscribeOn(Schedulers.io()) // Perform network call on background thread
-                    .observeOn(AndroidSchedulers.mainThread()) // Observe results on main thread
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             response -> {
                                 Log.d("API Response", new Gson().toJson(response));

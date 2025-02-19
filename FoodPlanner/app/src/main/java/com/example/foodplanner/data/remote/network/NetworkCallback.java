@@ -1,7 +1,5 @@
 package com.example.foodplanner.data.remote.network;
 
-import com.example.foodplanner.data.meals.Meal;
-
 import java.util.List;
 
 public interface NetworkCallback<T>{

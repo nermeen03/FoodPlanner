@@ -47,4 +47,13 @@
     <string name="ingredient">Ingredient</string>
     <string name="country">Country</string>
     <string name="category">Category</string>
+    <string name="default_web_client_id">252505979530-cc10lun140d8jtf1mujp1h3h1kt6a8ma.apps.googleusercontent.com</string>
+    <string name="continue_as_guest">Continue as Guest</string>
+    <string name="instructions">Instructions</string>
+    <string name="name">Name</string>
+    <string name="meal_name">Meal Name</string>
+    <string name="remove_meal">remove_meal</string>
+    <string name="more">More...</string>
+    <string name="welcome1">Welcome</string>
+
 </resources>

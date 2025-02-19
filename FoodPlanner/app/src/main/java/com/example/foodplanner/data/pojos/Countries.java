@@ -2,8 +2,6 @@ package com.example.foodplanner.data.pojos;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 
 public class Countries implements Data{
     @SerializedName("strArea")

@@ -1,10 +1,11 @@
 package com.example.foodplanner.data.local.plans;
-import io.reactivex.rxjava3.core.Observable;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;

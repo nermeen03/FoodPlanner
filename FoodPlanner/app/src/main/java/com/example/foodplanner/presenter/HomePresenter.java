@@ -15,15 +15,19 @@ public class HomePresenter implements NetworkCallback<Meal> {
         this.allProductsView = allProductsView;
         this.mealRepository = productRepository;
     }
-    public void getProducts(String type,String name){
-        mealRepository.getProducts(this,type,name);
+
+    public void getProducts(String type, String name) {
+        mealRepository.getProducts(this, type, name);
     }
-    public void getRecommend(){
+
+    public void getRecommend() {
         mealRepository.getRecommend(this);
     }
-    public void addFav(Meal meal){
+
+    public void addFav(Meal meal) {
         mealRepository.insertOneProduct(meal);
     }
+
     @Override
     public void onSuccessResult(List<Meal> meals) {
         allProductsView.showData(meals);

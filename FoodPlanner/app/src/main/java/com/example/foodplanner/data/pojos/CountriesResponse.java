@@ -1,6 +1,5 @@
 package com.example.foodplanner.data.pojos;
 
-import com.example.foodplanner.data.meals.Meal;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

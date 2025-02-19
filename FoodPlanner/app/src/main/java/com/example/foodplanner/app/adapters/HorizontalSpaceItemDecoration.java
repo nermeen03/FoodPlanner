@@ -18,8 +18,6 @@ public class HorizontalSpaceItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
                                @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         outRect.right = horizontalSpace;
-
-        // Remove spacing for the last item
         if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
             outRect.right = 0;
         }

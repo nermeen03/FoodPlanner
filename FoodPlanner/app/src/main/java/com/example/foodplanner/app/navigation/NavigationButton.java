@@ -1,5 +1,6 @@
 package com.example.foodplanner.app.navigation;
 
+import android.app.Activity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,26 +39,23 @@ public class NavigationButton {
                     Navigation.findNavController(view).navigate(R.id.searchFragment);
                     return true;
                 } else if (itemId == R.id.page_3) {
-                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
+                    if ("guest".equals(savedUserId) && networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
-                    }
-                    else if (!"guest".equals(savedUserId)) {
+                    } else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.favoriteFragment);
                     }
                     return true;
                 } else if (itemId == R.id.page_4) {
-                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
+                    if ("guest".equals(savedUserId) && networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
-                    }
-                    else if (!"guest".equals(savedUserId)) {
+                    } else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.calenderFragment);
                     }
                     return true;
                 } else if (itemId == R.id.page_5) {
-                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
+                    if ("guest".equals(savedUserId) && networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
-                    }
-                    else if (!"guest".equals(savedUserId)) {
+                    } else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.profileFragment);
                     }
                     return true;
@@ -66,13 +64,15 @@ public class NavigationButton {
             }
         });
     }
+
     public static void showLoginDialog(View view) {
-        // Create the AlertDialog
         new android.app.AlertDialog.Builder(view.getContext())
                 .setTitle("Guest User")
                 .setMessage("You are currently logged in as a guest. Would you like to log in?")
                 .setPositiveButton("Login", (dialog, which) -> {
                     Navigation.findNavController(view).navigate(R.id.signInFragment);
+                    BottomNavigationView bottomNavigationView = ((Activity) view.getContext()).findViewById(R.id.bottom_navigation);
+                    bottomNavigationView.setVisibility(View.GONE);
                 })
                 .setNegativeButton("Cancel", null)
                 .create()

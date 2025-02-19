@@ -18,7 +18,7 @@
             android:id="@+id/txtMealName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Meal Name"
+            android:text="@string/meal_name"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -32,6 +32,6 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:src="@drawable/close"
-            android:contentDescription="remove_meal" />
+            android:contentDescription="@string/remove_meal" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

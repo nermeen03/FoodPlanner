@@ -3,11 +3,9 @@ package com.example.foodplanner.app.register;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import io.reactivex.rxjava3.core.Observable;
 import androidx.navigation.Navigation;
+
 import com.example.foodplanner.R;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.user.SessionManager;
@@ -27,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.core.Observable;
+
 public class FirebaseHelper {
 
     private FirebaseAuth mAuth;
@@ -41,17 +41,18 @@ public class FirebaseHelper {
     public void saveUserToFireStore(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users")
-                .document(user.getUid()) // Set UID as the document ID
-                .set(user) // Save user data
+                .document(user.getUid())
+                .set(user)
                 .addOnSuccessListener(aVoid -> Log.d("TAG", "User data saved successfully!"))
                 .addOnFailureListener(e -> Log.e("TAG", "Error saving user data", e));
     }
-    public void saveFavoriteMeal(String userId, String mealId, String mealName,String mealImg) {
+
+    public void saveFavoriteMeal(String userId, String mealId, String mealName, String mealImg) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> meal = new HashMap<>();
         meal.put("name", mealName);
-        meal.put("img",mealImg);
+        meal.put("img", mealImg);
 
         db.collection("users").document(userId)
                 .collection("favorites").document(mealId)
@@ -59,6 +60,7 @@ public class FirebaseHelper {
                 .addOnSuccessListener(aVoid -> Log.d("TAG", "Favorite meal saved!"))
                 .addOnFailureListener(e -> Log.e("TAG", "Error saving favorite meal", e));
     }
+
     public void deleteFavoriteMeal(String userId, String mealId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(userId)
@@ -85,13 +87,12 @@ public class FirebaseHelper {
                             meals.add(mealInfo);
                             Log.d("TAG", "Favorite Meal: " + mealName);
                         }
-                        // Emit the meals list when the Firestore operation is complete
                         emitter.onNext(meals);
-                        emitter.onComplete(); // Complete the observable stream
+                        emitter.onComplete();
                     })
                     .addOnFailureListener(e -> {
                         Log.e("TAG", "Error fetching favorite meals", e);
-                        emitter.onError(e); // Emit error in case of failure
+                        emitter.onError(e);
                     });
         });
     }
@@ -99,7 +100,6 @@ public class FirebaseHelper {
 
     public void saveMealPlan(String userId, String date, String mealID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("TAG", "saveMealPlan: plaaan");
         Map<String, Object> mealPlan = new HashMap<>();
         mealPlan.put("meal", mealID);
 
@@ -109,11 +109,12 @@ public class FirebaseHelper {
                 .addOnSuccessListener(aVoid -> Log.d("TAG", "Meal plan saved for " + date))
                 .addOnFailureListener(e -> Log.e("TAG", "Error saving meal plan", e));
     }
+
     public void deleteMealFromPlan(String userId, String date, String mealID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference mealPlanRef = db.collection("users").document(userId)
                 .collection("mealPlans").document(date);
-                mealPlanRef.update("meal." + mealID, null)
+        mealPlanRef.update("meal." + mealID, null)
                 .addOnSuccessListener(aVoid -> Log.d("TAG", "Meal " + mealID + " deleted from meal plan on " + date))
                 .addOnFailureListener(e -> Log.e("TAG", "Error deleting meal from meal plan", e));
     }
@@ -135,92 +136,86 @@ public class FirebaseHelper {
                 .addOnFailureListener(e -> Log.e("TAG", "Error fetching meal plan", e));
     }
 
-    public void createAccount(String email,String password,String name,View view, Context context){
+    public void createAccount(String email, String password, String name, View view, Context context) {
         SessionManager sessionManager = new SessionManager(context);
         mAuth.createUserWithEmailAndPassword(email, password)
-                   .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("TAG", "createUserWithEmail: success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                sessionManager.saveUser(user.getUid(),user.getDisplayName(),user.getEmail());
-                                User newUser = new User(user.getUid(), name, email);
-                                saveUserToFireStore(newUser);
-                                Navigation.findNavController(view).navigate(R.id.action_signUpFragment_to_homeFragment);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "createUserWithEmail: success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            sessionManager.saveUser(user.getUid(), user.getDisplayName(), user.getEmail());
+                            User newUser = new User(user.getUid(), name, email);
+                            saveUserToFireStore(newUser);
+                            Navigation.findNavController(view).navigate(R.id.action_signUpFragment_to_homeFragment);
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
 
-                                // Update user profile (name, profile picture)
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(name) // Set user name
-                                        .build();
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(updateTask -> {
+                                        if (updateTask.isSuccessful()) {
+                                            Log.d("TAG", "User profile updated.");
+                                            user.reload().addOnCompleteListener(info -> fetchUserDetails());
 
-                                user.updateProfile(profileUpdates)
-                                        .addOnCompleteListener(updateTask -> {
-                                            if (updateTask.isSuccessful()) {
-                                                Log.d("TAG", "User profile updated.");
-                                                user.reload().addOnCompleteListener(info -> fetchUserDetails()); // Reload and fetch details
+                                        }
+                                    });
 
-                                            }
-                                        });
-
-                                // Send email verification
-                                user.sendEmailVerification()
-                                        .addOnCompleteListener(verificationTask -> {
-                                            if (verificationTask.isSuccessful()) {
-                                                Log.d("TAG", "Verification email sent.");
-                                            }
-                                        });
-                            }
-                        }else {
-                            Log.w("TAG", "createUserWithEmail: failure", task.getException());
-                            // Handle specific errors
-                            if (task.getException() instanceof FirebaseAuthWeakPasswordException) {
-                                Log.e("TAG", "Weak password!");
-                            } else if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Log.e("TAG", "Invalid email format!");
-                            } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Log.e("TAG", "Email is already in use!");
-                            }
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(verificationTask -> {
+                                        if (verificationTask.isSuccessful()) {
+                                            Log.d("TAG", "Verification email sent.");
+                                        }
+                                    });
                         }
-                    });
+                    } else {
+                        Log.w("TAG", "createUserWithEmail: failure", task.getException());
+                        if (task.getException() instanceof FirebaseAuthWeakPasswordException) {
+                            Log.e("TAG", "Weak password!");
+                        } else if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                            Log.e("TAG", "Invalid email format!");
+                        } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Log.e("TAG", "Email is already in use!");
+                        }
+                    }
+                });
     }
-    public void signIn(String email, String password, View view, Context context){
+
+    public void signIn(String email, String password, View view, Context context) {
         SessionManager sessionManager = new SessionManager(context);
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task ->  {
-                        if (task.isSuccessful()) {
-                            Log.d("TAG", "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user!=null){
-//                                User newUser = new User(user.getUid(), user.getDisplayName(), email);
-//                                saveUserToFireStore(newUser);
-                                sessionManager.saveUser(user.getUid(),user.getDisplayName(),user.getEmail());
-                                Navigation.findNavController(view).navigate(R.id.action_signInFragment_to_homeFragment);
-                            }
-                            //updateUI(user);
-                        } else {
-                            Log.w("TAG", "signInWithEmail:failure", task.getException());
-                            //updateUI(null);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "signInWithEmail:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            sessionManager.saveUser(user.getUid(), user.getDisplayName(), user.getEmail());
+                            Navigation.findNavController(view).navigate(R.id.action_signInFragment_to_homeFragment);
                         }
+                    } else {
+                        Log.w("TAG", "signInWithEmail:failure", task.getException());
+                    }
 
                 });
     }
+
     public String fetchUserDetails() {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            if (user != null) {
-                String name = user.getDisplayName();
-                String email = user.getEmail();
-                boolean emailVerified = user.isEmailVerified();
-                String uid = user.getUid();
+        if (user != null) {
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            boolean emailVerified = user.isEmailVerified();
+            String uid = user.getUid();
 
-                Log.d("TAG", "User Info: " + name + ", " + email + ", " + uid);
+            Log.d("TAG", "User Info: " + name + ", " + email + ", " + uid);
 
-                if (!emailVerified) {
-                    Log.w("TAG", "User email is not verified!");
-                }
-                return uid;
+            if (!emailVerified) {
+                Log.w("TAG", "User email is not verified!");
             }
-            return null;
+            return uid;
         }
-
+        return null;
     }
+
+}

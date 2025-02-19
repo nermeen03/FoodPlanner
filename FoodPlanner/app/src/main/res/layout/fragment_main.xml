@@ -16,23 +16,13 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="10dp" />
 
-<!--    &lt;!&ndash; App Logo &ndash;&gt;-->
-<!--    <ImageView-->
-<!--        android:id="@+id/imgLogo"-->
-<!--        android:layout_width="150dp"-->
-<!--        android:layout_height="150dp"-->
-<!--        android:src="@drawable/launch_icon"-->
-<!--    android:contentDescription="@string/app_name"-->
-<!--    app:layout_constraintTop_toTopOf="parent"-->
-<!--    app:layout_constraintStart_toStartOf="parent"-->
-<!--    app:layout_constraintEnd_toEndOf="parent" />-->
 
     <!-- Welcome Text -->
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome"
+        android:text="@string/welcome1"
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -46,7 +36,7 @@
         android:id="@+id/btnSignIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Sign In"
+        android:text="@string/sign_in"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +47,7 @@
         android:id="@+id/btnSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
+        android:text="@string/sign_up"
         app:layout_constraintTop_toBottomOf="@id/btnSignIn"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +58,7 @@
         android:id="@+id/btnGuest"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Continue as Guest"
+        android:text="@string/continue_as_guest"
         app:layout_constraintTop_toBottomOf="@id/btnSignUp"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"

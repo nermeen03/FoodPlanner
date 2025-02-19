@@ -1,7 +1,5 @@
 package com.example.foodplanner.data.local;
 
-import io.reactivex.rxjava3.core.Observable;
-
 import com.example.foodplanner.data.meals.Meal;
 
 import java.util.List;

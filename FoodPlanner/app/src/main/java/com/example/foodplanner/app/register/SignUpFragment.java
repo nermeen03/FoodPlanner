@@ -1,7 +1,6 @@
 package com.example.foodplanner.app.register;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
-import com.example.foodplanner.data.local.UserDataBase;
-import com.example.foodplanner.data.user.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class SignUpFragment extends Fragment {
     private EditText emailEditText, passwordEditText, confirmPasswordEditText, fullNameEditText;
@@ -30,7 +25,6 @@ public class SignUpFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
-        // Initialize views
         emailEditText = view.findViewById(R.id.etEmail);
         passwordEditText = view.findViewById(R.id.etPassword);
         confirmPasswordEditText = view.findViewById(R.id.etConfirmPassword);
@@ -38,17 +32,14 @@ public class SignUpFragment extends Fragment {
         signUpButton = view.findViewById(R.id.btnSignup);
         tvLogin = view.findViewById(R.id.tvLogin);
 
-        // Initialize FirebaseAuth and Room Database
         firebaseHelper = new FirebaseHelper();
 
-        // Sign-up button click listener
         signUpButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
             String confirmPassword = confirmPasswordEditText.getText().toString().trim();
             String fullName = fullNameEditText.getText().toString().trim();
 
-            // Validate input fields
             if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || fullName.isEmpty()) {
                 Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
                 return;
@@ -68,17 +59,16 @@ public class SignUpFragment extends Fragment {
                 Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
             }
-            firebaseHelper.createAccount(email,password,fullName,view,getContext());
+            firebaseHelper.createAccount(email, password, fullName, view, getContext());
 
         });
-        tvLogin.setOnClickListener(v->{
+        tvLogin.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.signInFragment);
         });
 
         return view;
     }
 
-    // Helper methods
     private boolean isValidEmail(String email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }

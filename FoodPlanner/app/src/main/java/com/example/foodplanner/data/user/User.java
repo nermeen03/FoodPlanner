@@ -12,14 +12,12 @@ public class User {
     private String email;
     private String fullName;
 
-    // Constructor
     public User(String uid, String email, String fullName) {
         this.uid = uid;
         this.email = email;
         this.fullName = fullName;
     }
 
-    // Getters and setters
     public String getUid() {
         return uid;
     }

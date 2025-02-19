@@ -5,23 +5,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.data.local.plans.MealPlan;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPlanViewHolder> {
 
+    FirebaseHelper firebaseHelper;
     private List<MealPlan> mealPlans = new ArrayList<>();
     private Listener listener;
-    FirebaseHelper firebaseHelper;
-    public MealPlanAdapter(Listener listener){
+
+    public MealPlanAdapter(Listener listener) {
         this.listener = listener;
         firebaseHelper = new FirebaseHelper();
     }
@@ -41,10 +42,15 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPl
         holder.imgRemove.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onRemoveMealPlan(mealPlan);
-                firebaseHelper.deleteMealFromPlan(firebaseHelper.fetchUserDetails(),mealPlan.getMealId(),mealPlan.getMealName());
+                firebaseHelper.deleteMealFromPlan(firebaseHelper.fetchUserDetails(), mealPlan.getMealId(), mealPlan.getMealName());
 
             }
         });
+    }
+
+    public void removeMealPlans(MealPlan mealPlan) {
+        mealPlans.remove(mealPlan);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -52,10 +58,10 @@ public class MealPlanAdapter extends RecyclerView.Adapter<MealPlanAdapter.MealPl
         return mealPlans.size();
     }
 
-    public void setMealPlans(List<MealPlan> mealPlans,String date) {
+    public void setMealPlans(List<MealPlan> mealPlans, String date) {
         this.mealPlans = mealPlans;
-        if(mealPlans.isEmpty()){
-            firebaseHelper.getMealPlan(firebaseHelper.fetchUserDetails(),date);
+        if (mealPlans.isEmpty()) {
+            firebaseHelper.getMealPlan(firebaseHelper.fetchUserDetails(), date);
         }
         notifyDataSetChanged();
     }

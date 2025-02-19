@@ -1,5 +1,7 @@
 package com.example.foodplanner.app.views.fragments;
 
+import static com.example.foodplanner.app.navigation.NavigationButton.showLoginDialog;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -25,12 +26,11 @@ import com.example.foodplanner.data.meals.MealInfo;
 import com.example.foodplanner.data.pojos.Data;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
+import com.example.foodplanner.data.user.SessionManager;
 import com.example.foodplanner.presenter.MealPresenter;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-
-import org.chromium.base.Callback;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,13 +42,13 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MealFragment extends Fragment implements AllMealsView<Data> {
-    View view ;
+    View view;
     private RecyclerView ingredientRecyclerView;
     private NamesAdapter ingredientAdapter;
-    private List<String> ingredients,measures;
-    private ImageView imgMeal,favImg,calenderImg,playButton;
-    private TextView txtFlag,mealName, txtInstructions,txtCategory;
-    private YouTubePlayerView youtubePlayerView ;
+    private List<String> ingredients, measures;
+    private ImageView imgMeal, playButton;
+    private TextView txtFlag, mealName, txtInstructions, txtCategory;
+    private YouTubePlayerView youtubePlayerView;
     private YouTubePlayer youtubePlayer;
     private String videoId;
 
@@ -61,6 +61,8 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
         view = inflater.inflate(R.layout.fragment_meal, container, false);
         ScrollView scrollView = view.findViewById(R.id.scrollView);
         scrollView.post(() -> scrollView.scrollTo(0, 0));
+        SessionManager sessionManager = new SessionManager(view.getContext());
+        String savedUserId = sessionManager.getUserId();
 
         MealFragmentArgs args = MealFragmentArgs.fromBundle(getArguments());
         MealInfo dataList = args.getMeal();
@@ -69,16 +71,13 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
         ingredientRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         ingredientRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(1));
         imgMeal = view.findViewById(R.id.imgMeal);
-        favImg = view.findViewById(R.id.favoriteImg);
-        calenderImg = view.findViewById(R.id.calendarImg);
         txtFlag = view.findViewById(R.id.txtFlag);
         mealName = view.findViewById(R.id.mealName);
         txtInstructions = view.findViewById(R.id.txtInstructions);
         txtCategory = view.findViewById(R.id.mealCat);
         youtubePlayerView = view.findViewById(R.id.youtube_player_view);
-        playButton = view.findViewById(R.id.playButton); // Assuming you have a play button (could be an ImageView)
+        playButton = view.findViewById(R.id.playButton);
 
-        // Initially hide the YouTube player view
         youtubePlayerView.setVisibility(View.GONE);
 
         youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
@@ -97,7 +96,7 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
         playButton.setOnClickListener(v -> {
             if (videoId != null && !videoId.isEmpty() && youtubePlayer != null) {
                 youtubePlayer.loadVideo(videoId, 0);
-                youtubePlayerView.setVisibility(View.VISIBLE); // Make YouTube player visible when clicked
+                youtubePlayerView.setVisibility(View.VISIBLE);
             } else {
                 Log.e("YouTubePlayer", "Invalid Video ID or YouTube Player is not ready");
             }
@@ -111,18 +110,6 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
                     .error(R.drawable.food)
                     .into(imgMeal);
         }
-        favImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        calenderImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         txtFlag.setText(dataList.getStrArea());
         mealName.setText(dataList.getStrMeal());
         txtCategory.setText(dataList.getStrCategory());
@@ -158,7 +145,7 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
                 this,
                 RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
         );
-        ingredientAdapter = new NamesAdapter(ingredients,mealPresenter);
+        ingredientAdapter = new NamesAdapter(ingredients, mealPresenter);
         ingredientRecyclerView.setAdapter(ingredientAdapter);
         txtInstructions.setText(dataList.getStrInstructions());
         return view;
@@ -172,14 +159,14 @@ public class MealFragment extends Fragment implements AllMealsView<Data> {
     public void showError(String error) {
 
     }
+
     private String extractVideoIdFromUrl(String url) {
         String videoId = null;
         try {
-            // Check if the URL is from YouTube and contains the expected query parameter
             if (url != null && url.contains("v=")) {
                 String[] urlParts = url.split("v=");
                 if (urlParts.length > 1) {
-                    videoId = urlParts[1].split("&")[0];  // Take the part before any additional parameters
+                    videoId = urlParts[1].split("&")[0];
                 }
             }
         } catch (Exception e) {

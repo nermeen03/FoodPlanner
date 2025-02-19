@@ -15,17 +15,21 @@ public class SearchPresenter implements NetworkCallback<Data> {
         this.allCountries = allCountries;
         this.searchRepositoryInt = searchRepositoryInt;
     }
-    public void getProducts(String type,String name){
-        searchRepositoryInt.getProducts(this,type,name);
+
+    public void getProducts(String type, String name) {
+        searchRepositoryInt.getProducts(this, type, name);
     }
-    public void getCategories(String type, String name){
-        searchRepositoryInt.getCategories(this,type,name);
+
+    public void getCategories(String type, String name) {
+        searchRepositoryInt.getCategories(this, type, name);
     }
-    public void getIngredient(String type, String name){
-        searchRepositoryInt.getIngredient(this,type,name);
+
+    public void getIngredient(String type, String name) {
+        searchRepositoryInt.getIngredient(this, type, name);
     }
-    public void getCountries(String type, String name){
-        searchRepositoryInt.getCountries(this,type,name);
+
+    public void getCountries(String type, String name) {
+        searchRepositoryInt.getCountries(this, type, name);
     }
 
 
@@ -33,6 +37,7 @@ public class SearchPresenter implements NetworkCallback<Data> {
     public void onSuccessResult(List<Data> data) {
         allCountries.showData(data);
     }
+
     @Override
     public void onFailureResult(String errorMsg) {
         allCountries.showError(errorMsg);

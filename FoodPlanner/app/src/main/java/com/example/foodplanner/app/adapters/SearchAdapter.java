@@ -1,7 +1,6 @@
 package com.example.foodplanner.app.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +16,14 @@ import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder>{
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
+    RecyclerView recyclerView;
     private List<Data> dataList;
     private Context context;
     private Listener listener;
-    private final List<String> favoriteMeals = new ArrayList<>();
-    RecyclerView recyclerView ;
     private MealPresenter mealPresenter;
-    public SearchAdapter(List<Data> dataList, Context context,Listener listener, MealPresenter mealPresenter) {
+
+    public SearchAdapter(List<Data> dataList, Context context, Listener listener, MealPresenter mealPresenter) {
         this.dataList = dataList;
         this.context = context;
         this.listener = listener;
@@ -49,8 +48,21 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         return dataList.size();
     }
 
+    public void updateData(List<Data> newNames) {
+        dataList.clear();
+        dataList.addAll(newNames);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public MaterialButton btn;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             btn = itemView.findViewById(R.id.btn_country);
@@ -60,30 +72,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     if (recyclerView != null) {
                         int recyclerViewId = recyclerView.getId();
                         String recyclerViewName = recyclerView.getResources().getResourceEntryName(recyclerViewId);
-                        if(recyclerViewName.equals("category_recycler")){
-                            mealPresenter.getCategories("categories",btn.getText().toString(),itemView);
-                        }else if(recyclerViewName.equals("ingredient_recycler")){
-                            mealPresenter.getIngredients("ingredients",btn.getText().toString(),itemView);
-                        }else if(recyclerViewName.equals("country_recycler")){
-                            mealPresenter.getCountries("countries",btn.getText().toString(),itemView);
+                        if (recyclerViewName.equals("category_recycler")) {
+                            mealPresenter.getCategories("categories", btn.getText().toString(), itemView);
+                        } else if (recyclerViewName.equals("ingredient_recycler")) {
+                            mealPresenter.getIngredients("ingredients", btn.getText().toString(), itemView);
+                        } else if (recyclerViewName.equals("country_recycler")) {
+                            mealPresenter.getCountries("countries", btn.getText().toString(), itemView);
                         }
                     }
-                    //
                 }
             });
         }
-
-
     }
-    public void updateData(List<Data> newNames) {
-        dataList.clear();
-        dataList.addAll(newNames);
-        notifyDataSetChanged();
-    }
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        this.recyclerView = recyclerView;
-    }
-
 }

@@ -1,24 +1,27 @@
 package com.example.foodplanner.data.repo;
 
-import io.reactivex.rxjava3.core.Observable;
 import com.example.foodplanner.data.local.MealsLocalDataSourceInt;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSourceInt;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
+
 import java.util.List;
 
-public class MealRepository implements MealRepositoryInt{
+import io.reactivex.rxjava3.core.Observable;
+
+public class MealRepository implements MealRepositoryInt {
+    private static MealRepository repo = null;
     MealsLocalDataSourceInt productLocalDataSource;
     MealRemoteDataSourceInt productRemoteDataSource;
-    private static MealRepository repo = null;
 
     public MealRepository(MealsLocalDataSourceInt productLocalDataSource, MealRemoteDataSourceInt productRemoteDataSource) {
         this.productLocalDataSource = productLocalDataSource;
         this.productRemoteDataSource = productRemoteDataSource;
     }
-    public static MealRepository getInstance(MealsLocalDataSourceInt localDataSource, MealRemoteDataSourceInt productRemoteDataSource){
-        if(repo==null){
-            repo = new MealRepository(localDataSource,productRemoteDataSource);
+
+    public static MealRepository getInstance(MealsLocalDataSourceInt localDataSource, MealRemoteDataSourceInt productRemoteDataSource) {
+        if (repo == null) {
+            repo = new MealRepository(localDataSource, productRemoteDataSource);
         }
         return repo;
     }
@@ -29,8 +32,8 @@ public class MealRepository implements MealRepositoryInt{
     }
 
     @Override
-    public void getProducts(NetworkCallback networkCallback,String type,String name) {
-        productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
+    public void getProducts(NetworkCallback networkCallback, String type, String name) {
+        productRemoteDataSource.makeNetworkCall(networkCallback, type, name);
     }
 
     @Override
@@ -40,7 +43,7 @@ public class MealRepository implements MealRepositoryInt{
 
     @Override
     public void getRecommend(NetworkCallback networkCallback) {
-        productRemoteDataSource.makeNetworkCall(networkCallback,"recommend",null);
+        productRemoteDataSource.makeNetworkCall(networkCallback, "recommend", null);
     }
 
     @Override

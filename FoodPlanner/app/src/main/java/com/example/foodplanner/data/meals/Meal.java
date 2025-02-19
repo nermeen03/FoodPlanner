@@ -1,8 +1,5 @@
 package com.example.foodplanner.data.meals;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -24,40 +21,36 @@ public class Meal implements Data, Serializable {
 
     private String user;
 
-    // Default constructor (required for Room)
-    public Meal() {}
+    public Meal() {
+    }
 
-    // Custom constructor
     @Ignore
-    public Meal(@NonNull String idMeal, String strMeal, String strMealThumb,String user) {
+    public Meal(@NonNull String idMeal, String strMeal, String strMealThumb, String user) {
         this.idMeal = idMeal;
         this.strMeal = strMeal;
         this.strMealThumb = strMealThumb;
         this.user = user;
     }
 
-    // Getter methods
     @NonNull
     public String getIdMeal() {
         return idMeal;
+    }
+
+    public void setIdMeal(@NonNull String idMeal) {
+        this.idMeal = idMeal;
     }
 
     public String getStrMeal() {
         return strMeal;
     }
 
-    public String getStrMealThumb() {
-        return strMealThumb;
-    }
-    //setter
-
-
-    public void setIdMeal(@NonNull String idMeal) {
-        this.idMeal = idMeal;
-    }
-
     public void setStrMeal(String strMeal) {
         this.strMeal = strMeal;
+    }
+
+    public String getStrMealThumb() {
+        return strMealThumb;
     }
 
     public void setStrMealThumb(String strMealThumb) {

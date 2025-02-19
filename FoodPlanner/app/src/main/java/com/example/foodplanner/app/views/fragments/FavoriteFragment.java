@@ -1,25 +1,19 @@
 package com.example.foodplanner.app.views.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.CardAdapter;
+import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.app.register.FirebaseHelper;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
@@ -29,19 +23,23 @@ import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.presenter.FavPresenter;
-import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.presenter.MealPresenter;
 
 import java.util.List;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
 public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Listener {
-    private RecyclerView recyclerView;
     CardAdapter cardAdapter;
     FavPresenter presenter;
+    private RecyclerView recyclerView;
     private Observable<List<Meal>> mealsList;
 
     public FavoriteFragment() {
@@ -57,8 +55,21 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
         FirebaseHelper firebaseHelper = new FirebaseHelper();
         String user = firebaseHelper.fetchUserDetails();
         mealsList = presenter.getProducts(user);
-        if(mealsList!=null){
-            mealsList = firebaseHelper.getFavoriteMeals(user);
+        Disposable disposable = mealsList.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(meals -> {
+                    cardAdapter.setMeals(meals);
+                }, throwable -> {
+                    Log.e("TAG", "Error fetching meals", throwable);
+                });
+        if (mealsList == null) {
+            Disposable disposable2 = firebaseHelper.getFavoriteMeals(user).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(meals -> {
+                        cardAdapter.setMeals(meals);
+                    }, throwable -> {
+                        Log.e("TAG", "Error fetching mealRemote", throwable);
+                    });
         }
         MealPlanRepository repository = new MealPlanRepository(getActivity().getApplication());
         MealFragment mealFragment = new MealFragment();
@@ -67,17 +78,11 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
                 RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance())
         );
 
-        //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
-        cardAdapter = new CardAdapter(mealsList,getContext(), this,repository,mealPresenter,view);
-        Disposable disposable = mealsList.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(meals -> {
-            if (meals != null) {
-                cardAdapter.setMeals(meals);
-            }
-        });
+        cardAdapter = new CardAdapter(mealsList, getContext(), this, repository, mealPresenter, view);
         recyclerView.setAdapter(cardAdapter);
         return view;
     }
+
     @Override
     public void showData(List<Meal> meals) {
         cardAdapter.setMeals(meals);
@@ -88,12 +93,14 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
     public void showError(String error) {
         Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
     }
+
     @Override
-    public void onAddClick(Meal meal){
+    public void onAddClick(Meal meal) {
         presenter.addFav(meal);
     }
+
     @Override
-    public void onRemoveClick(Meal meal){
+    public void onRemoveClick(Meal meal) {
         presenter.removeFav(meal);
     }
 

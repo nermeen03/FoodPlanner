@@ -68,7 +68,6 @@
                 android:gravity="center_vertical"
                 android:hint="@string/search_recipes"
                 android:textColor="@color/white"
-                android:drawableLeft="@drawable/search"
                 android:textSize="18sp" />
 
             <com.google.android.material.chip.ChipGroup
@@ -137,7 +136,6 @@
                 android:id="@+id/cat_loading_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:indeterminate="true" />
 
@@ -163,7 +161,6 @@
                 android:id="@+id/count_loading_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:indeterminate="true" />
 
@@ -188,7 +185,6 @@
                 android:id="@+id/ing_loading_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:indeterminate="true" />
         </LinearLayout>

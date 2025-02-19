@@ -1,11 +1,9 @@
 package com.example.foodplanner.app.views.viewhelpers;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 import com.example.foodplanner.data.local.plans.MealPlan;
 import com.example.foodplanner.data.repo.MealPlanRepository;
@@ -15,17 +13,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+
 public class CalendarViewModel extends AndroidViewModel {
-    private MealPlanRepository repository;
-    private final BehaviorSubject<Long> selectedDaySubject = BehaviorSubject.create(); // Used instead of MutableLiveData
+    private final BehaviorSubject<Long> selectedDaySubject = BehaviorSubject.create();
     private final Observable<List<MealPlan>> mealPlansForDay;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private MealPlanRepository repository;
 
     public CalendarViewModel(@NonNull Application application) {
         super(application);
         repository = new MealPlanRepository(application);
-
-        // Observable for meal plans for the selected day
         mealPlansForDay = selectedDaySubject
                 .flatMap(day -> {
                     Calendar cal = Calendar.getInstance();
@@ -41,20 +40,20 @@ public class CalendarViewModel extends AndroidViewModel {
                 });
     }
 
-    public void setSelectedDay(long dayInMillis) {
-        selectedDaySubject.onNext(dayInMillis); // Update the selected day
+    public Observable<Long> getSelectedDay() {
+        return selectedDaySubject;
     }
 
-    public Observable<Long> getSelectedDay() {
-        return selectedDaySubject; // Emit the selected day as an observable
+    public void setSelectedDay(long dayInMillis) {
+        selectedDaySubject.onNext(dayInMillis);
     }
 
     public Observable<List<MealPlan>> getMealPlansForDay() {
-        return mealPlansForDay; // Observable for meal plans for the selected day
+        return mealPlansForDay;
     }
 
     public Observable<String> getSelectedDayFormatted() {
         return selectedDaySubject
-                .map(day -> dateFormat.format(day)); // Format the selected day as a string
+                .map(day -> dateFormat.format(day));
     }
 }

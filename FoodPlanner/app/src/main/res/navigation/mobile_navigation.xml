@@ -130,5 +130,9 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.foodplanner.app.register.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 </navigation>

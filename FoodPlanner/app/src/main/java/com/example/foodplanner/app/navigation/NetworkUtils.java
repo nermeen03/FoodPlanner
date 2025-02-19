@@ -11,11 +11,6 @@ public class NetworkUtils {
     private final ConnectivityManager.NetworkCallback networkCallback;
     private final NetworkStateListener listener;
 
-    public interface NetworkStateListener {
-        void onNetworkAvailable();
-        void onNetworkLost();
-    }
-
     public NetworkUtils(Context context, NetworkStateListener listener) {
         this.listener = listener;
         connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -45,6 +40,7 @@ public class NetworkUtils {
     public void unregisterNetworkCallback() {
         connectivityManager.unregisterNetworkCallback(networkCallback);
     }
+
     public boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
@@ -52,5 +48,11 @@ public class NetworkUtils {
             return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
         }
         return false;
+    }
+
+    public interface NetworkStateListener {
+        void onNetworkAvailable();
+
+        void onNetworkLost();
     }
 }

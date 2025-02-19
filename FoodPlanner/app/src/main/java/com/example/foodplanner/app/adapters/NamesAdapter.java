@@ -1,6 +1,5 @@
 package com.example.foodplanner.app.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,10 @@ import java.util.List;
 
 public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHolder> {
 
+    public static String selected;
     private List<String> namesList;
     private MealPresenter mealPresenter;
-    public static String selected;
+
     public NamesAdapter(List<String> namesList, MealPresenter mealPresenter) {
         this.namesList = namesList;
         this.mealPresenter = mealPresenter;
@@ -44,10 +44,15 @@ public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHold
         return namesList.size();
     }
 
+    public void updateData(List<String> newNames) {
+        namesList.clear();
+        namesList.addAll(newNames);
+        notifyDataSetChanged();
+    }
+
     public class NameViewHolder extends RecyclerView.ViewHolder {
 
         TextView nameTextView;
-
 
         public NameViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -55,25 +60,20 @@ public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHold
             nameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(Navigation.findNavController(itemView).getCurrentDestination().getId() == R.id.searchFragment) {
-                        if(selected.equals("meal")) {
+                    if (Navigation.findNavController(itemView).getCurrentDestination().getId() == R.id.searchFragment) {
+                        if (selected.equals("meal")) {
                             mealPresenter.getMeal("meal", nameTextView.getText().toString(), itemView);
                         } else if (selected.equals("category")) {
-                            mealPresenter.getCategories("categories", nameTextView.getText().toString(),itemView);
-                        }else if (selected.equals("country")) {
-                            mealPresenter.getCategories("countries", nameTextView.getText().toString(),itemView);
-                        }else if (selected.equals("ingredient")) {
-                            mealPresenter.getCategories("ingredients", nameTextView.getText().toString(),itemView);
+                            mealPresenter.getCategories("categories", nameTextView.getText().toString(), itemView);
+                        } else if (selected.equals("country")) {
+                            mealPresenter.getCategories("countries", nameTextView.getText().toString(), itemView);
+                        } else if (selected.equals("ingredient")) {
+                            mealPresenter.getCategories("ingredients", nameTextView.getText().toString(), itemView);
                         }
                     }
                 }
             });
         }
-    }
-    public void updateData(List<String> newNames) {
-        namesList.clear();
-        namesList.addAll(newNames);
-        notifyDataSetChanged();
     }
 }
 

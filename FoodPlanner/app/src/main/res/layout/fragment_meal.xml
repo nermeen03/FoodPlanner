@@ -33,7 +33,6 @@
             android:layout_marginTop="24dp"
             android:background="@drawable/flag"
             android:paddingTop="10dp"
-            android:text="sbhdh"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -53,12 +52,11 @@
             android:id="@+id/mealCat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="30dp"
-            android:text="TextView"
-            android:textSize="20sp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="160dp"
+            android:textSize="30sp"
             app:layout_constraintStart_toEndOf="@+id/imgMeal"
-            app:layout_constraintTop_toBottomOf="@+id/calendarImg" />
+            app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
         <TextView
             android:id="@+id/mealName"
@@ -66,7 +64,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:text="TextView"
             android:textSize="30sp"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/imgMeal" />
@@ -86,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="108dp"
             android:layout_marginTop="70dp"
-            android:text="Instructions"
+            android:text="@string/instructions"
             android:textColor="@color/white"
             android:textSize="30sp"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -99,7 +96,6 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="20dp"
-            android:text="TextView"
             android:textAlignment="center"
             android:textSize="25sp"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -111,7 +107,7 @@
             android:layout_height="48dp"
             android:src="@drawable/play"
             android:layout_marginTop="30dp"
-            android:layout_marginStart="150dp"
+            android:layout_marginStart="180dp"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/txtInstructions" />
 
@@ -123,29 +119,6 @@
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/txtInstructions"/>
-
-
-        <ImageView
-            android:id="@+id/favoriteImg"
-            android:layout_width="40dp"
-            android:layout_height="37dp"
-            android:layout_marginTop="130dp"
-            android:layout_marginEnd="29dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/favorite" />
-
-        <ImageView
-            android:id="@+id/calendarImg"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="124dp"
-            android:layout_marginEnd="23dp"
-            app:layout_constraintEnd_toStartOf="@+id/favoriteImg"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/add" />
-
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

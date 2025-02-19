@@ -1,15 +1,7 @@
 package com.example.foodplanner.app.views.fragments;
 
-import android.content.IntentFilter;
 import android.graphics.Rect;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,9 +9,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
+import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.app.adapters.NamesAdapter;
 import com.example.foodplanner.app.adapters.SearchAdapter;
 import com.example.foodplanner.app.navigation.NetworkUtils;
@@ -34,7 +39,6 @@ import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.remote.network.SearchRemoteDataSource;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.data.repo.SearchRepository;
-import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.presenter.MealPresenter;
 import com.example.foodplanner.presenter.SearchPresenter;
 import com.google.android.material.chip.Chip;
@@ -43,16 +47,11 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
 
 public class SearchFragment extends Fragment implements AllDataView, Listener {
@@ -85,7 +84,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        Log.i("TAG", "onCreateView: hgsdye");
         scrollable = view.findViewById(R.id.scrollView);
         loading_image = view.findViewById(R.id.loading_image);
 
@@ -107,7 +105,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         });
         networkUtils.registerNetworkCallback();
 
-        // Check the network connection initially
         if (!networkUtils.isNetworkAvailable(requireContext())) {
             scrollable.setVisibility(View.GONE);
             Glide.with(this)
@@ -218,7 +215,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     }
 
     private void filters(String s) {
-        Log.d("TAG", "filters: +"+s+selectedFilter);
         switch (selectedFilter) {
             case "meal":
                 filterNames(s);
@@ -245,7 +241,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                         for (Data data:filtered) {
                             if (data.getIngredient().toLowerCase().contains(query.toLowerCase()) ||
                                     data.getStrMeal().toLowerCase().contains(query.toLowerCase())) {
-                                Log.d("TAG", "filterCategory: hfu"+data.getIngredient());
                                     filter.add(data.getIngredient());
                             }
 
@@ -347,7 +342,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     }
     @Override
     public void showData(List<Data> dataList) {
-        Log.d("TAG", "showData: hereds");
         if (dataList.isEmpty()) return;
         if (dataList.get(0) instanceof Ingredient) {
             viewModel.updateIngredients(dataList);
@@ -457,11 +451,11 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     }
     private void loadCountries() {
         Disposable count = viewModel.getCountriesList()
-                .subscribeOn(Schedulers.io()) // Work on a background thread
-                .observeOn(AndroidSchedulers.mainThread()) // Update UI on the main thread
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(countries -> {
                     if (countries.isEmpty() && !isLoading) {
-                        isLoading = true;  // Prevent multiple load requests
+                        isLoading = true;
                         presenter.getCountries("countries", null);
                         countryAdapter.updateData(countries);
                     }else{
@@ -469,17 +463,14 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                         countryAdapter.notifyDataSetChanged();
                     }
                 }, throwable -> {
-                    // Handle any errors in the Observable
                     Log.e("TAG", "Error fetching countries", throwable);
                 });
     }
     private void loadIngredient() {
-        // Subscribe to the Observable that emits the list of ingredients
         Disposable ing = viewModel.getIngredientsList()
-                .subscribeOn(Schedulers.io()) // Work on a background thread
-                .observeOn(AndroidSchedulers.mainThread()) // Update UI on the main thread
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ingredients -> {
-                    Log.d("TAG", "loadIngredient: ammm");
                     if (ingredients.isEmpty() && !isLoading) {
                         Log.d("TAG", "loadIngredient: yes");
                         isLoading = true;
@@ -494,14 +485,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                     // Handle any errors in the Observable
                     Log.e("TAG", "Error fetching ingredients", throwable);
                 });
-    }
-    public void refreshPage() {
-        if (networkUtils.isNetworkAvailable(requireContext())) {
-//            presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
-//            presenter.getRecommend();
-        } else {
-            Toast.makeText(getContext(), "No network connection", Toast.LENGTH_SHORT).show();
-        }
     }
     public void visibleCategory(){
         category_recycler.setVisibility(View.VISIBLE);

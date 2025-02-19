@@ -2,10 +2,7 @@ package com.example.foodplanner.app.views.fragments;
 
 import static org.chromium.base.ThreadUtils.runOnUiThread;
 
-import android.content.Context;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,16 +17,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
-import com.example.foodplanner.app.activity.MainActivity;
+import com.example.foodplanner.app.adapters.CardAdapter;
+import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.app.navigation.NetworkUtils;
 import com.example.foodplanner.app.register.FirebaseHelper;
-import com.example.foodplanner.app.views.fragments.MealFragment;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
@@ -37,11 +33,9 @@ import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSource;
 import com.example.foodplanner.data.repo.MealPlanRepository;
 import com.example.foodplanner.data.repo.MealRepository;
-import com.example.foodplanner.app.adapters.CardAdapter;
 import com.example.foodplanner.data.repo.RemoteMealRepository;
 import com.example.foodplanner.presenter.FavPresenter;
 import com.example.foodplanner.presenter.HomePresenter;
-import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.presenter.MealPresenter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -110,11 +104,11 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         );
         FirebaseHelper firebaseHelper = new FirebaseHelper();
         String user = firebaseHelper.fetchUserDetails();
-        Log.d("TAG", "onCreateView: "+user);
+        Log.d("TAG", "onCreateView: " + user);
         favPresenter = new FavPresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
 
-        mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
-        recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
+        mealsAdapter = new CardAdapter(mealsList, getContext(), this, repository, mealPresenter, view, favPresenter.getProducts(user));
+        recommendAdapter = new CardAdapter(recommendList, getContext(), this, repository, mealPresenter, view, favPresenter.getProducts(user));
         presenter = new HomePresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
 
 
@@ -136,7 +130,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(meals -> {
                                 if (!meals.isEmpty()) {
-                                    Log.d("TAG", "onNetworkAvailable: oooof"+meals);
                                     meal_recyclerView.setVisibility(View.VISIBLE);
                                     mealLoadingProgress.setVisibility(View.GONE);
                                     mealsAdapter.updateData(meals);
@@ -192,7 +185,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         networkUtils.registerNetworkCallback();
 
 
-        // Check the network connection initially
         if (!networkUtils.isNetworkAvailable(requireContext())) {
             scrollable.setVisibility(View.GONE);
             Glide.with(this)
@@ -202,11 +194,10 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
             loading_image.setVisibility(View.VISIBLE);
         } else {
             scrollable.setVisibility(View.VISIBLE);
-            if(!mealsList.isEmpty()){
+            loading_image.setVisibility(View.GONE);
+            if (!mealsList.isEmpty()) {
                 refreshPage();
-            }else{
-                Log.d("TAG", "onCreateView: again");
-                loading_image.setVisibility(View.GONE);
+            } else {
                 recLoadingProgress.setVisibility(View.VISIBLE);
                 mealLoadingProgress.setVisibility(View.VISIBLE);
                 presenter.getProducts("letter", "a");
@@ -236,7 +227,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                 mealLoadingProgress.setVisibility(View.GONE);
             }
         } else {
-            if(meals.get(0) instanceof Meal) {
+            if (meals.get(0) instanceof Meal) {
                 viewModel.updateRecommendList(meals);
                 recommend_recyclerView.setVisibility(View.VISIBLE);
                 recLoadingProgress.setVisibility(View.GONE);
@@ -250,7 +241,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     }
 
     @Override
-    public void onAddClick(Meal meal){
+    public void onAddClick(Meal meal) {
         presenter.addFav(meal);
     }
 
@@ -274,9 +265,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
 
                 if (recyclerView == meal_recyclerView && !isLoading && (visibleItemCount + firstItemPosition) >= totalItemCount && firstItemPosition >= 0) {
                     loadData();
-                }
-                else if(!isRecommend && (visibleItemCount + firstItemPosition) >= totalItemCount && firstItemPosition >= 0) {
-                    Log.i("TAG", "onScrolled: reco");
+                } else if (!isRecommend && (visibleItemCount + firstItemPosition) >= totalItemCount && firstItemPosition >= 0) {
                     loadRecommend();
                 }
             }
@@ -294,7 +283,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
 
     private void loadRecommend() {
         isRecommend = true;
-        Log.i("TAG", "loadRecommend: ");
         presenter.getRecommend();
     }
 
@@ -304,9 +292,7 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1001) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted – you can now access the calendar
             } else {
-                // Permission denied – inform the user that the feature is unavailable.
                 Toast.makeText(getContext(), "Calendar permission is required to add meals.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -318,7 +304,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         if (networkUtils != null) {
             networkUtils.unregisterNetworkCallback();
         }
-        // Dispose of RxJava disposables when the fragment is stopped
         if (disposableMeals != null && !disposableMeals.isDisposed()) {
             disposableMeals.dispose();
         }
@@ -329,10 +314,10 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
 
     public void refreshPage() {
         if (networkUtils.isNetworkAvailable(requireContext())) {
-            if(mealsList.isEmpty()) {
-                presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
+            if (mealsList.isEmpty()) {
+                presenter.getProducts("letter", "a");
                 presenter.getRecommend();
-            }else{
+            } else {
                 mealsAdapter.notifyDataSetChanged();
                 recommendAdapter.notifyDataSetChanged();
                 isLoading = false;
