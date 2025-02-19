@@ -2,15 +2,15 @@
     <!-- Base application theme. -->
     <style name="Theme.FoodPlanner" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">#757575</item>
+        <item name="colorPrimaryVariant">#A3A3A4</item>
+        <item name="colorOnPrimary">#25385D</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondaryVariant">#E903DAC5</item>
+        <item name="colorOnSecondary">#25385D</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">#718D9D</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>
