@@ -63,12 +63,12 @@ dependencies {
     // Room (for local storage)
     implementation 'androidx.room:room-runtime:2.5.2'
     annotationProcessor 'androidx.room:room-compiler:2.5.2'
-    implementation 'androidx.room:room-rxjava2:2.5.2'
+    implementation "androidx.room:room-rxjava3:2.5.0"
 
     // Retrofit (for remote sync)
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
 
     // Firebase
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'

@@ -1,6 +1,6 @@
 package com.example.foodplanner.presenter;
 
-import androidx.lifecycle.LiveData;
+import io.reactivex.rxjava3.core.Observable;
 
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.data.meals.Meal;
@@ -8,6 +8,8 @@ import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.repo.MealRepositoryInt;
 
 import java.util.List;
+
+import io.reactivex.rxjava3.core.Observable;
 
 public class FavPresenter implements NetworkCallback<Meal>{
     AllMealsView allProductsView;
@@ -17,7 +19,7 @@ public class FavPresenter implements NetworkCallback<Meal>{
         this.allProductsView = allProductsView;
         this.mealRepository = productRepository;
     }
-    public LiveData<List<Meal>> getProducts(String name){
+    public Observable<List<Meal>> getProducts(String name){
         return mealRepository.getProducts(name);
     }
     public void addFav(Meal meal){

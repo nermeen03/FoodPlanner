@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.foodplanner.R;
@@ -32,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class SignInFragment extends Fragment {
 
     private EditText emailEditText, passwordEditText;
+    private TextView tvSignup;
     private Button signInButton;
     private FirebaseHelper firebaseHelper;
 
@@ -44,6 +46,7 @@ public class SignInFragment extends Fragment {
         emailEditText = view.findViewById(R.id.etEmail);
         passwordEditText = view.findViewById(R.id.etPassword);
         signInButton = view.findViewById(R.id.btnLogin);
+        tvSignup = view.findViewById(R.id.tvSignup);
 
         firebaseHelper = new FirebaseHelper();
 
@@ -59,6 +62,9 @@ public class SignInFragment extends Fragment {
             }
             firebaseHelper.signIn(email,password,view,getContext());
 
+        });
+        tvSignup.setOnClickListener(v->{
+            Navigation.findNavController(view).navigate(R.id.signUpFragment);
         });
 
         return view;

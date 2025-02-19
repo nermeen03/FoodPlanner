@@ -22,7 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.NamesAdapter;
 import com.example.foodplanner.app.adapters.SearchAdapter;
-import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
+import com.example.foodplanner.app.navigation.NetworkUtils;
 import com.example.foodplanner.app.views.viewhelpers.AllDataView;
 import com.example.foodplanner.app.views.viewhelpers.SearchViewModel;
 import com.example.foodplanner.data.meals.Meal;
@@ -37,6 +37,9 @@ import com.example.foodplanner.data.repo.SearchRepository;
 import com.example.foodplanner.app.adapters.Listener;
 import com.example.foodplanner.presenter.MealPresenter;
 import com.example.foodplanner.presenter.SearchPresenter;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -62,14 +65,16 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
     Disposable observable;
     boolean isLoading = false;
 
-    // Our ViewModel instance
     private SearchViewModel viewModel;
-    private NetworkChangeReceiver networkChangeReceiver;
+    private NetworkUtils networkUtils;
     private ScrollView scrollable;
     private ProgressBar catLoadingProgress;
     private ProgressBar countLoadingProgress;
     private ProgressBar ingLoadingProgress;
     private ImageView loading_image;
+    private String selectedFilter = "meal";
+    private Chip categoryChip,countryChip,ingredientChip;
+    private ChipGroup chip_group_filters;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,9 +94,21 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         countLoadingProgress = view.findViewById(R.id.count_loading_progress);
         ingLoadingProgress = view.findViewById(R.id.ing_loading_progress);
 
-        networkChangeReceiver = new NetworkChangeReceiver(scrollable,this);
+        networkUtils = new NetworkUtils(requireContext(), new NetworkUtils.NetworkStateListener() {
+            @Override
+            public void onNetworkAvailable() {
+                Log.d("TAG", "Network is available");
+            }
+
+            @Override
+            public void onNetworkLost() {
+                Log.d("TAG", "Network is lost");
+            }
+        });
+        networkUtils.registerNetworkCallback();
+
         // Check the network connection initially
-        if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
+        if (!networkUtils.isNetworkAvailable(requireContext())) {
             scrollable.setVisibility(View.GONE);
             Glide.with(this)
                     .asGif()
@@ -103,7 +120,6 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
             loading_image.setVisibility(View.GONE);
 
         }
-        getActivity().registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         MealPresenter mealPresenter = new MealPresenter(
                 new MealFragment(),
@@ -132,43 +148,54 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         namesAdapter = new NamesAdapter(new ArrayList<>(),mealPresenter);
         recyclerMealsName.setAdapter(namesAdapter);
 
+        categoryChip = view.findViewById(R.id.chip_category);
+        countryChip = view.findViewById(R.id.chip_country);
+        ingredientChip = view.findViewById(R.id.chip_ingredient);
+        chip_group_filters = view.findViewById(R.id.chip_group_filters);
+
         if(scrollable.getVisibility()==View.VISIBLE){
             invisibleCategory();
             invisibleIngredient();
             invisibleCountry();
-
         }
 
+        editText.setOnClickListener(v -> {
+            chip_group_filters.setVisibility(View.VISIBLE);
+            clearPreviousFilter();
+        });
 
-        // (Optional) Also observe other lists to update your SearchAdapters:
-        viewModel.getCountriesList().observe(getViewLifecycleOwner(), countries -> {
-            countryAdapter.updateData(countries);
+        categoryChip.setOnClickListener(v -> {
+            selectedFilter = "category";
+            resetChips();
+            categoryChip.setChecked(true);
+            updateSearchHint();
+            NamesAdapter.selected = "category";
+            clearPreviousFilter();
         });
-        viewModel.getIngredientsList().observe(getViewLifecycleOwner(), ingredients -> {
-            ingredientAdapter.updateData(ingredients);
-        });
-        viewModel.getCategoriesList().observe(getViewLifecycleOwner(), categories -> {
-            categoryAdapter.updateData(categories);
-        });
-        if (viewModel.getCategoriesList().getValue().isEmpty()) {
-            Log.i("TAG", "onCreateView: list"+viewModel.getCategoriesList().getValue());
-            presenter.getCategories("categories", null);
 
-        }else{
-            Log.i("TAG", "onCreateView: uuefrh");
-        }
+        countryChip.setOnClickListener(v -> {
+            selectedFilter = "country";
+            resetChips();
+            countryChip.setChecked(true);
+            updateSearchHint();
+            NamesAdapter.selected = "country";
+            clearPreviousFilter();
+        });
+
+        ingredientChip.setOnClickListener(v -> {
+            selectedFilter = "ingredient";
+            resetChips();
+            ingredientChip.setChecked(true);
+            updateSearchHint();
+            NamesAdapter.selected = "ingredient";
+            clearPreviousFilter();
+        });
+
+        loadCategories();
+
         recyclerListener(category_recycler);
         recyclerListener(country_recycler);
-        recyclerListener(ingredient_recycler);
 
-        // Observe the filtered names list from the ViewModel
-        viewModel.getFilteredNames().observe(getViewLifecycleOwner(), filtered -> {
-            namesAdapter.updateData(filtered); // Assume NamesAdapter has an updateData() method
-        });
-
-
-
-        // Set up an RxJava Observable for the EditText input (for debouncing)
         observable = Observable.create(emitter -> {
                     editText.addTextChangedListener(new TextWatcher() {
                         @Override
@@ -181,17 +208,146 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                         public void afterTextChanged(Editable s) {}
                     });
                 })
-                .map(charSequence -> charSequence.toString())
+                .map(Object::toString)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::filterNames, Throwable::printStackTrace);
+                .subscribe(this::filters, Throwable::printStackTrace);
 
         return view;
     }
 
+    private void filters(String s) {
+        Log.d("TAG", "filters: +"+s+selectedFilter);
+        switch (selectedFilter) {
+            case "meal":
+                filterNames(s);
+                break;
+            case "category":
+                filterCategory(s);
+                break;
+            case "country":
+                filterCountry(s);
+                break;
+            case "ingredient":
+                filterIngredient(s);
+                break;
+        }
+    }
+
+    private void filterCategory(String query) {
+        List<String> filter = new ArrayList<>();
+        if (!query.isEmpty()) {
+            Disposable disposableCountry = viewModel.getCategoriesList()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(filtered -> {
+                        for (Data data:filtered) {
+                            if (data.getIngredient().toLowerCase().contains(query.toLowerCase()) ||
+                                    data.getStrMeal().toLowerCase().contains(query.toLowerCase())) {
+                                Log.d("TAG", "filterCategory: hfu"+data.getIngredient());
+                                    filter.add(data.getIngredient());
+                            }
+
+                        }
+                        namesAdapter.updateData(filter);
+                        viewModel.updateFilteredNames(filter);
+                        recyclerMealsName.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+                    }, throwable -> {
+                        Log.e("TAG", "Error fetching allCategories", throwable);
+                    });
+        }
+        else {
+            recyclerMealsName.setVisibility(View.GONE);
+        }
+    }
+    private void filterCountry(String query) {
+        if (!query.isEmpty()) {
+            Disposable disposableCountry = viewModel.getCountriesList()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(filtered -> {
+                        if(!filtered.isEmpty()) {
+                            List<String> filter = new ArrayList<>();
+                            for (Data data : filtered) {
+                                if (data.getIngredient().toLowerCase().contains(query.toLowerCase()) ||
+                                        data.getStrMeal().toLowerCase().contains(query.toLowerCase())) {
+                                    filter.add(data.getIngredient());
+                                }
+                            }
+                            namesAdapter.updateData(filter);
+                            viewModel.updateFilteredNames(filter);
+                            recyclerMealsName.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+                        }else{
+                            loadCountries();
+                        }
+                    }, throwable -> {
+                        Log.e("TAG", "Error fetching allCategories", throwable);
+                    });
+        }
+        else {
+            recyclerMealsName.setVisibility(View.GONE);
+        }
+    }
+    private void filterIngredient(String query) {
+        if (!query.isEmpty()) {
+            Disposable disposableCountry = viewModel.getIngredientsList()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(filtered -> {
+                        if(!filtered.isEmpty()){
+                            List<String> filter = new ArrayList<>();
+                            for (Data data:filtered) {
+                                if (data.getIngredient().toLowerCase().contains(query.toLowerCase()) ||
+                                        data.getStrMeal().toLowerCase().contains(query.toLowerCase())) {
+                                    filter.add(data.getIngredient());
+                                }
+                            }
+                            namesAdapter.updateData(filter);
+                            viewModel.updateFilteredNames(filter);
+                            recyclerMealsName.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+                        }else{
+                            loadIngredient();
+                        }
+                    }, throwable -> {
+                        Log.e("TAG", "Error fetching allCategories", throwable);
+                    });
+        }
+        else {
+            recyclerMealsName.setVisibility(View.GONE);
+        }
+    }
+    private void filterNames(String query) {
+        List<String> filtered = new ArrayList<>();
+        if (!query.isEmpty()) {
+            if (query.length() == 1) {
+                presenter.getProducts("letter", query);
+            }
+            Disposable disposable = viewModel.getAllNames()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(names -> {
+                        if (names != null) {
+                            for (String name : names) {
+                                if (name.toLowerCase().contains(query.toLowerCase())) {
+                                    filtered.add(name);
+                                }
+                            }
+                        }
+                        namesAdapter.updateData(filtered);
+                        viewModel.updateFilteredNames(filtered);
+                        recyclerMealsName.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+                    }, throwable -> {
+                        Log.e("TAG", "Error fetching allNames", throwable);
+                    });
+        }
+        else {
+            recyclerMealsName.setVisibility(View.GONE);
+        }
+    }
     @Override
     public void showData(List<Data> dataList) {
+        Log.d("TAG", "showData: hereds");
         if (dataList.isEmpty()) return;
         if (dataList.get(0) instanceof Ingredient) {
             viewModel.updateIngredients(dataList);
@@ -200,6 +356,7 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
             viewModel.updateCategories(dataList);
             visibleCategory();
         } else if (dataList.get(0) instanceof Countries) {
+            Log.d("TAG", "showData: adding");
             viewModel.updateCountries(dataList);
             visibleCountry();
         } else if (dataList.get(0) instanceof Meal) {
@@ -212,35 +369,10 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
             viewModel.updateAllNames(names);
         }
     }
-
     @Override
     public void showError(String error) {
         Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
     }
-
-    // Filtering logic: update the filteredNames LiveData in the ViewModel.
-    private void filterNames(String query) {
-        List<String> filtered = new ArrayList<>();
-        // If query is not empty, filter the allNames list.
-        if (!query.isEmpty()) {
-            if (query.length() == 1) {
-                presenter.getProducts("letter", query);
-            }
-            List<String> allNames = viewModel.getAllNames().getValue();
-            if (allNames != null) {
-                for (String name : allNames) {
-                    if (name.toLowerCase().contains(query.toLowerCase())) {
-                        filtered.add(name);
-                    }
-                }
-            }
-            recyclerMealsName.setVisibility(View.VISIBLE);
-        } else {
-            recyclerMealsName.setVisibility(View.GONE);
-        }
-        viewModel.updateFilteredNames(filtered);
-    }
-
     private void setupRecyclerView(RecyclerView recyclerView) {
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
@@ -249,8 +381,7 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(horizontalSpacing, verticalSpacing));
     }
 
-    // A simple ItemDecoration for grid spacing.
-    class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+    static class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
         private final int horizontalSpacing;
         private final int verticalSpacing;
         public GridSpacingItemDecoration(int horizontalSpacing, int verticalSpacing) {
@@ -258,7 +389,7 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
             this.verticalSpacing = verticalSpacing;
         }
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             outRect.left = horizontalSpacing;
             outRect.right = horizontalSpacing;
             outRect.top = verticalSpacing;
@@ -282,10 +413,11 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
                             + lastVisibleItemPosition + ", totalItemCount = " + totalItemCount);
 
                     if (lastVisibleItemPosition >= totalItemCount - 1) {
-                        isLoading = true;
                         if (recyclerView == category_recycler) {
+                            isLoading = false;
                             loadCountries();
-                        } else if (recyclerView == ingredient_recycler) {
+                        } else if (recyclerView == country_recycler) {
+                            isLoading = false;
                             loadIngredient();
                         }
                     }
@@ -299,21 +431,72 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         });
     }
 
-    private void loadCountries() {
-        if (viewModel.getCountriesList().getValue().isEmpty()) {
-            presenter.getCountries("countries", null);
-            isLoading = false;
-        }
+    private void loadCategories(){
+        Disposable disposableCategory = viewModel.getCategoriesList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(categories -> {
+                    if (categories.isEmpty()) {
+                        Log.i("TAG", "Categories list is empty. Fetching categories...");
+                        presenter.getCategories("categories", null);
+                        categoryAdapter.updateData(categories);
+                        categoryAdapter.notifyDataSetChanged();
+                    } else {
+                        if(category_recycler.getVisibility()==View.GONE){
+                            visibleCategory();
+                            visibleCountry();
+                            visibleIngredient();
+                        }
+                        categoryAdapter.updateData(categories);
+                        categoryAdapter.notifyDataSetChanged();
+                        Log.i("TAG", "Categories list is already populated.");
+                    }
+                }, throwable -> {
+                    Log.e("TAG", "Error fetching categories", throwable);
+                });
     }
-
+    private void loadCountries() {
+        Disposable count = viewModel.getCountriesList()
+                .subscribeOn(Schedulers.io()) // Work on a background thread
+                .observeOn(AndroidSchedulers.mainThread()) // Update UI on the main thread
+                .subscribe(countries -> {
+                    if (countries.isEmpty() && !isLoading) {
+                        isLoading = true;  // Prevent multiple load requests
+                        presenter.getCountries("countries", null);
+                        countryAdapter.updateData(countries);
+                    }else{
+                        countryAdapter.updateData(countries);
+                        countryAdapter.notifyDataSetChanged();
+                    }
+                }, throwable -> {
+                    // Handle any errors in the Observable
+                    Log.e("TAG", "Error fetching countries", throwable);
+                });
+    }
     private void loadIngredient() {
-        if (viewModel.getIngredientsList().getValue().isEmpty()) {
-            presenter.getIngredient("ingredients", null);
-            isLoading = false;
-        }
+        // Subscribe to the Observable that emits the list of ingredients
+        Disposable ing = viewModel.getIngredientsList()
+                .subscribeOn(Schedulers.io()) // Work on a background thread
+                .observeOn(AndroidSchedulers.mainThread()) // Update UI on the main thread
+                .subscribe(ingredients -> {
+                    Log.d("TAG", "loadIngredient: ammm");
+                    if (ingredients.isEmpty() && !isLoading) {
+                        Log.d("TAG", "loadIngredient: yes");
+                        isLoading = true;
+                        presenter.getIngredient("ingredients", null);
+                        ingredientAdapter.updateData(ingredients);
+                    }else{
+                        Log.d("TAG", "loadIngredient: no");
+                        ingredientAdapter.updateData(ingredients);
+                        ingredientAdapter.notifyDataSetChanged();
+                    }
+                }, throwable -> {
+                    // Handle any errors in the Observable
+                    Log.e("TAG", "Error fetching ingredients", throwable);
+                });
     }
     public void refreshPage() {
-        if (networkChangeReceiver.isNetworkAvailable(getContext())) {
+        if (networkUtils.isNetworkAvailable(requireContext())) {
 //            presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
 //            presenter.getRecommend();
         } else {
@@ -345,4 +528,31 @@ public class SearchFragment extends Fragment implements AllDataView, Listener {
         ingLoadingProgress.setVisibility(View.VISIBLE);
         ingredient_recycler.setVisibility(View.GONE);
     }
+    private void resetChips() {
+        categoryChip.setChecked(false);
+        countryChip.setChecked(false);
+        ingredientChip.setChecked(false);
+    }
+    private void updateSearchHint() {
+        switch (selectedFilter) {
+            case "category":
+                editText.setHint("Search by Category...");
+                break;
+            case "country":
+                editText.setHint("Search by Country...");
+                break;
+            case "ingredient":
+                editText.setHint("Search by Ingredient...");
+                break;
+            default:
+                editText.setHint("Search for Meals...");
+        }
+    }
+    private void clearPreviousFilter() {
+        if (!editText.getText().toString().isEmpty()) {
+            editText.setText("");
+        }
+        recyclerMealsName.setVisibility(View.GONE);
+    }
+
 }

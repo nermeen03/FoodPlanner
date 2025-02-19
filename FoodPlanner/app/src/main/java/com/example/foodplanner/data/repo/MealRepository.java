@@ -1,12 +1,10 @@
 package com.example.foodplanner.data.repo;
 
-import androidx.lifecycle.LiveData;
-
+import io.reactivex.rxjava3.core.Observable;
 import com.example.foodplanner.data.local.MealsLocalDataSourceInt;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.MealRemoteDataSourceInt;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
-
 import java.util.List;
 
 public class MealRepository implements MealRepositoryInt{
@@ -26,7 +24,7 @@ public class MealRepository implements MealRepositoryInt{
     }
 
     @Override
-    public LiveData<List<Meal>> getProducts(String name) {
+    public Observable<List<Meal>> getProducts(String name) {
         return productLocalDataSource.getStoredMeals(name);
     }
 

@@ -1,5 +1,6 @@
 package com.example.foodplanner.app.navigation;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -13,6 +14,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class NavigationButton {
     public static void navigationOnClick(BottomNavigationView bottomNavigationView, View view) {
         SessionManager sessionManager = new SessionManager(view.getContext());
+        NetworkUtils networkUtils = new NetworkUtils(view.getContext(), new NetworkUtils.NetworkStateListener() {
+            @Override
+            public void onNetworkAvailable() {
+                Log.d("TAG", "Network is available");
+            }
+
+            @Override
+            public void onNetworkLost() {
+                Log.d("TAG", "Network is lost");
+            }
+        });
+        networkUtils.registerNetworkCallback();
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -25,26 +38,26 @@ public class NavigationButton {
                     Navigation.findNavController(view).navigate(R.id.searchFragment);
                     return true;
                 } else if (itemId == R.id.page_3) {
-                    if ("guest".equals(savedUserId)) {
+                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
                     }
-                    else {
+                    else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.favoriteFragment);
                     }
                     return true;
                 } else if (itemId == R.id.page_4) {
-                    if ("guest".equals(savedUserId)) {
+                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
                     }
-                    else {
+                    else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.calenderFragment);
                     }
                     return true;
                 } else if (itemId == R.id.page_5) {
-                    if ("guest".equals(savedUserId)) {
+                    if ("guest".equals(savedUserId)&&networkUtils.isNetworkAvailable(view.getContext())) {
                         showLoginDialog(view);
                     }
-                    else {
+                    else if (!"guest".equals(savedUserId)) {
                         Navigation.findNavController(view).navigate(R.id.profileFragment);
                     }
                     return true;

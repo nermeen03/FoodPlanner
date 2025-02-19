@@ -6,19 +6,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import io.reactivex.rxjava3.core.Observable;
 import androidx.navigation.Navigation;
-
 import com.example.foodplanner.R;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.user.SessionManager;
 import com.example.foodplanner.data.user.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -28,8 +21,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,27 +68,34 @@ public class FirebaseHelper {
                 .addOnFailureListener(e -> Log.e("TAG", "Error deleting favorite meal", e));
     }
 
-    public LiveData<List<Meal>> getFavoriteMeals(String userId) {
+    public Observable<List<Meal>> getFavoriteMeals(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        MutableLiveData<List<Meal>> liveDataMeals = new MutableLiveData<>();
-        db.collection("users").document(userId)
-                .collection("favorites")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Meal> meals = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        String mealName = document.getString("name");
-                        String mealImg =  document.getString("img");
-                        String mealId = document.getId();
-                        Meal mealInfo = new Meal(mealId,mealName,mealImg,userId);
-                        meals.add(mealInfo);
-                        Log.d("TAG", "Favorite Meal: " + mealName);
-                    }
-                    liveDataMeals.setValue(meals);
-                })
-                .addOnFailureListener(e -> Log.e("TAG", "Error fetching favorite meals", e));
-        return liveDataMeals;
+
+        return Observable.create(emitter -> {
+            db.collection("users").document(userId)
+                    .collection("favorites")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        List<Meal> meals = new ArrayList<>();
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            String mealName = document.getString("name");
+                            String mealImg = document.getString("img");
+                            String mealId = document.getId();
+                            Meal mealInfo = new Meal(mealId, mealName, mealImg, userId);
+                            meals.add(mealInfo);
+                            Log.d("TAG", "Favorite Meal: " + mealName);
+                        }
+                        // Emit the meals list when the Firestore operation is complete
+                        emitter.onNext(meals);
+                        emitter.onComplete(); // Complete the observable stream
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("TAG", "Error fetching favorite meals", e);
+                        emitter.onError(e); // Emit error in case of failure
+                    });
+        });
     }
+
 
     public void saveMealPlan(String userId, String date, String mealID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

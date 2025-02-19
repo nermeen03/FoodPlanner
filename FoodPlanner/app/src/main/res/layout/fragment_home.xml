@@ -54,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
+                android:layout_marginStart="-20dp"
                 android:layout_gravity="center"
                 android:text="@string/daily_inspiration"
                 android:textColor="@color/white"
@@ -70,8 +71,7 @@
                 android:id="@+id/reco_loading_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="-30dp"
+                android:layout_marginStart="-40dp"
                 android:paddingBottom="16dp"
                 android:visibility="gone"
                 android:indeterminate="true" />
@@ -84,7 +84,8 @@
                 android:layout_marginTop="30dp"
                 android:layout_gravity="center"
                 android:paddingBottom="10dp"
-                android:text="Meals"
+                android:layout_marginStart="-20dp"
+                android:text="@string/all_meals"
                 android:textColor="@color/white"
                 android:textSize="30sp" />
 
@@ -99,7 +100,6 @@
                 android:id="@+id/meal_loading_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:indeterminate="true"
                 android:layout_marginStart="-5dp"/>

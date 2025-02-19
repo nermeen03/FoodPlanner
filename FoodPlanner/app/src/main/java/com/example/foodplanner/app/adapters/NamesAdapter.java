@@ -19,6 +19,7 @@ public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHold
 
     private List<String> namesList;
     private MealPresenter mealPresenter;
+    public static String selected;
     public NamesAdapter(List<String> namesList, MealPresenter mealPresenter) {
         this.namesList = namesList;
         this.mealPresenter = mealPresenter;
@@ -47,6 +48,7 @@ public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHold
 
         TextView nameTextView;
 
+
         public NameViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(android.R.id.text1);
@@ -54,7 +56,15 @@ public class NamesAdapter extends RecyclerView.Adapter<NamesAdapter.NameViewHold
                 @Override
                 public void onClick(View v) {
                     if(Navigation.findNavController(itemView).getCurrentDestination().getId() == R.id.searchFragment) {
-                        mealPresenter.getMeal("meal", nameTextView.getText().toString(),itemView);
+                        if(selected.equals("meal")) {
+                            mealPresenter.getMeal("meal", nameTextView.getText().toString(), itemView);
+                        } else if (selected.equals("category")) {
+                            mealPresenter.getCategories("categories", nameTextView.getText().toString(),itemView);
+                        }else if (selected.equals("country")) {
+                            mealPresenter.getCategories("countries", nameTextView.getText().toString(),itemView);
+                        }else if (selected.equals("ingredient")) {
+                            mealPresenter.getCategories("ingredients", nameTextView.getText().toString(),itemView);
+                        }
                     }
                 }
             });

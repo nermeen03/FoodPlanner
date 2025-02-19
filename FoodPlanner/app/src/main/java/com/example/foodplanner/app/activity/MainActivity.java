@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -17,12 +18,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.navigation.NavigationButton;
+import com.example.foodplanner.app.navigation.NetworkUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 
 public class MainActivity extends AppCompatActivity {
-
+    private NetworkUtils networkUtils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +45,23 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR},
                     1001);
         }
+//        networkUtils = new NetworkUtils(this, new NetworkUtils.NetworkStateListener() {
+//            @Override
+//            public void onNetworkAvailable() {
+//                runOnUiThread(() -> {
+//                    Toast.makeText(MainActivity.this, " internet Connection is back", Toast.LENGTH_SHORT).show();
+//                });
+//            }
+//
+//            @Override
+//            public void onNetworkLost() {
+//                runOnUiThread(() -> {
+//                    Toast.makeText(MainActivity.this, "No internet Connection", Toast.LENGTH_SHORT).show();
+//                });
+//            }
+//        });
+//
+//        networkUtils.registerNetworkCallback();
 
     }
 

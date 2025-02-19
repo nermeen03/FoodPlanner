@@ -21,7 +21,7 @@ import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.app.adapters.CardAdapter;
-import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
+import com.example.foodplanner.app.navigation.NetworkUtils;
 import com.example.foodplanner.data.meals.Meal;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 import com.example.foodplanner.data.user.SessionManager;
@@ -96,25 +96,39 @@ public class SplashFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SessionManager sessionManager = new SessionManager(getContext());
-        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
+
+        SessionManager sessionManager = new SessionManager(requireContext());
+
+        // Initialize NetworkUtils with a listener
+        NetworkUtils networkUtils = new NetworkUtils(requireContext(), new NetworkUtils.NetworkStateListener() {
+            @Override
+            public void onNetworkAvailable() {
+                Log.d("TAG", "Network is available");
+            }
+
+            @Override
+            public void onNetworkLost() {
+                Log.d("TAG", "Network is lost");
+            }
+        });
+
         new Handler().postDelayed(() -> {
-            if(networkChangeReceiver.isNetworkAvailable(getContext())) {
+            if (networkUtils.isNetworkAvailable(requireContext())) {
                 String savedUserId = sessionManager.getUserId();
                 Log.d("TAG", "onViewCreated: saved" + savedUserId);
+
                 if (savedUserId != null && !savedUserId.isEmpty()) {
                     Log.d("TAG", "User is logged in.");
-                    // Navigate to mainFragment
                     Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_homeFragment);
                 } else {
                     Log.d("TAG", "No saved user. Redirecting to login.");
-                    // Navigate to loginFragment if no user is found
                     Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_mainFragment);
                 }
-            }
-            else{
+            } else {
+                Log.d("TAG", "No Internet, navigating to HomeFragment anyway.");
                 Navigation.findNavController(view).navigate(R.id.action_splashFragment_to_homeFragment);
             }
         }, 1000);
     }
+
 }

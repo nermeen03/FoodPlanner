@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import androidx.lifecycle.LiveData;
+import io.reactivex.rxjava3.core.Observable;
 
 import com.example.foodplanner.data.local.AppDataBase;
 import com.example.foodplanner.data.local.plans.MealPlan;
@@ -24,10 +24,10 @@ public class MealPlanRepository {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    public LiveData<List<MealPlan>> getMealPlansForWeek(long startDate, long endDate) {
+    public Observable<List<MealPlan>> getMealPlansForWeek(long startDate, long endDate) {
         return mealPlanDao.getMealPlansForWeek(startDate, endDate);
     }
-    public LiveData<List<MealPlan>> getMealPlansForDay(long startTime, long endTime) {
+    public Observable<List<MealPlan>> getMealPlansForDay(long startTime, long endTime) {
         return mealPlanDao.getMealPlansForDay(startTime, endTime);
     }
 
@@ -53,7 +53,7 @@ public class MealPlanRepository {
     public void deleteMealPlan(final MealPlan mealPlan) {
         executor.execute(() -> mealPlanDao.deleteMealPlan(mealPlan));
     }
-    public LiveData<List<MealPlan>> getAllMealPlans() {
+    public Observable<List<MealPlan>> getAllMealPlans() {
         return mealPlanDao.getAllMealPlans();
     }
 }

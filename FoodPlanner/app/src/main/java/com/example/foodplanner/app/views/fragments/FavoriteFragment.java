@@ -3,7 +3,12 @@ package com.example.foodplanner.app.views.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +42,7 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
     private RecyclerView recyclerView;
     CardAdapter cardAdapter;
     FavPresenter presenter;
-    private LiveData<List<Meal>> mealsList;
+    private Observable<List<Meal>> mealsList;
 
     public FavoriteFragment() {
     }
@@ -64,7 +69,8 @@ public class FavoriteFragment extends Fragment implements AllMealsView<Meal>, Li
 
         //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
         cardAdapter = new CardAdapter(mealsList,getContext(), this,repository,mealPresenter,view);
-        mealsList.observe(getViewLifecycleOwner(), meals -> {
+        Disposable disposable = mealsList.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(meals -> {
             if (meals != null) {
                 cardAdapter.setMeals(meals);
             }

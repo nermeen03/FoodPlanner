@@ -7,9 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.foodplanner.R;
 import com.example.foodplanner.data.local.UserDataBase;
@@ -20,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUpFragment extends Fragment {
     private EditText emailEditText, passwordEditText, confirmPasswordEditText, fullNameEditText;
     private Button signUpButton;
+    private TextView tvLogin;
     private FirebaseHelper firebaseHelper;
 
     @Override
@@ -33,6 +36,7 @@ public class SignUpFragment extends Fragment {
         confirmPasswordEditText = view.findViewById(R.id.etConfirmPassword);
         fullNameEditText = view.findViewById(R.id.etFullName);
         signUpButton = view.findViewById(R.id.btnSignup);
+        tvLogin = view.findViewById(R.id.tvLogin);
 
         // Initialize FirebaseAuth and Room Database
         firebaseHelper = new FirebaseHelper();
@@ -66,6 +70,9 @@ public class SignUpFragment extends Fragment {
             }
             firebaseHelper.createAccount(email,password,fullName,view,getContext());
 
+        });
+        tvLogin.setOnClickListener(v->{
+            Navigation.findNavController(view).navigate(R.id.signInFragment);
         });
 
         return view;

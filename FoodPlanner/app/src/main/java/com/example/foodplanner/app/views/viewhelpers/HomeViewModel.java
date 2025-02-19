@@ -1,8 +1,10 @@
 package com.example.foodplanner.app.views.viewhelpers;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 import com.example.foodplanner.data.meals.Meal;
 
@@ -10,36 +12,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<List<Meal>> mealsList = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<List<Meal>> recommendList = new MutableLiveData<>(new ArrayList<>());
+    // BehaviorSubject ensures that the latest list of meals is always emitted to new subscribers
+    private final BehaviorSubject<List<Meal>> mealsListSubject = BehaviorSubject.createDefault(new ArrayList<>());
+    private final BehaviorSubject<List<Meal>> recommendListSubject = BehaviorSubject.createDefault(new ArrayList<>());
 
-    public LiveData<List<Meal>> getMealsList() {
-        return mealsList;
+    public Observable<List<Meal>> getMealsList() {
+        return mealsListSubject;
     }
 
-    public LiveData<List<Meal>> getRecommendList() {
-        return recommendList;
+    public Observable<List<Meal>> getRecommendList() {
+        return recommendListSubject;
     }
 
     public void updateMealsList(List<Meal> newMeals) {
-        List<Meal> currentMeals = mealsList.getValue();
+        // Get the current list or an empty list if it's null
+        List<Meal> currentMeals = mealsListSubject.getValue();
         if (currentMeals == null) {
             currentMeals = new ArrayList<>();
         }
+
+        // Add new meals to the current list
         currentMeals.addAll(newMeals);
-        mealsList.setValue(currentMeals);
+
+        // Emit the updated list
+        mealsListSubject.onNext(currentMeals);
     }
 
     public void updateRecommendList(List<Meal> newMeals) {
-        List<Meal> currentReco = recommendList.getValue();
+        // Get the current recommendation list or an empty list if it's null
+        List<Meal> currentReco = recommendListSubject.getValue();
         if (currentReco == null) {
             currentReco = new ArrayList<>();
         }
+
+        // Add new meals to the recommendation list, ensuring no duplicates and a max size of 5
         for (Meal meal : newMeals) {
             if (!currentReco.contains(meal) && currentReco.size() < 5) {
                 currentReco.add(meal);
             }
         }
-        recommendList.setValue(currentReco);
+
+        // Emit the updated recommendation list
+        recommendListSubject.onNext(currentReco);
     }
 }

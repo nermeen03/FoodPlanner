@@ -29,7 +29,7 @@
         android:src="@drawable/wait"
         android:layout_centerInParent="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/guideline_top"
         android:visibility="gone" />
 
     <!-- Scrollable Content -->
@@ -70,6 +70,45 @@
                 android:textColor="@color/white"
                 android:drawableLeft="@drawable/search"
                 android:textSize="18sp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_filters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/et_search_recipes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_category"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/category"
+                    android:checkable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_country"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/country"
+                    android:checkable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_ingredient"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/ingredient"
+                    android:checkable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+            </com.google.android.material.chip.ChipGroup>
 
             <!-- Categories Label -->
             <androidx.recyclerview.widget.RecyclerView

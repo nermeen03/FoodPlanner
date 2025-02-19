@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,7 +31,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class CalenderFragment extends Fragment implements Listener {
 
@@ -57,10 +61,25 @@ public class CalenderFragment extends Fragment implements Listener {
         calendarViewModel = new ViewModelProvider(this).get(CalendarViewModel.class);
 
         // Observe meal plans for the selected day
-        calendarViewModel.getMealPlansForDay().observe(getViewLifecycleOwner(), mealPlans -> {
-            String selectedDate = calendarViewModel.getSelectedDayFormatted().getValue();
-            mealPlanAdapter.setMealPlans(mealPlans, selectedDate);
-        });
+        Disposable disposable = Observable.zip(
+                        calendarViewModel.getMealPlansForDay(),
+                        calendarViewModel.getSelectedDayFormatted(),
+                        (mealPlans, selectedDate) -> {
+                            return new Pair<>(mealPlans, selectedDate);
+                        })
+                .subscribeOn(Schedulers.io()) // Perform background work
+                .observeOn(AndroidSchedulers.mainThread()) // Switch to main thread for UI updates
+                .subscribe(
+                        pair -> {
+                            // Update the adapter with both meal plans and selected date
+                            mealPlanAdapter.setMealPlans(pair.first, pair.second);
+                        },
+                        throwable -> {
+                            // Handle any error
+                            Log.e("CalendarViewModel", "Error", throwable);
+                        }
+                );
+
 
 
 

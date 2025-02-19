@@ -19,7 +19,13 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -45,14 +51,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
     private MealPlanRepository mealPlanRepository;
     private MealPresenter mealPresenter;
     private View view;
-    private LiveData<List<Meal>> favoriteMealsLiveData;
+    private Observable<List<Meal>> favoriteMealsLiveData;
     FirebaseHelper firebaseHelper;
     public CardAdapter(List<Meal> meals,
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
                        MealPresenter mealPresenter, View view,
-                       LiveData<List<Meal>> favoriteMealsLiveData) {
+                       Observable<List<Meal>> favoriteMealsLiveData) {
         this.meals = meals;
         this.context = context;
         this.listener = listener;
@@ -62,7 +68,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         this.favoriteMealsLiveData = favoriteMealsLiveData;
         firebaseHelper = new FirebaseHelper();
     }
-    public CardAdapter(LiveData<List<Meal>> favoriteMealsLiveData,
+    public CardAdapter(Observable<List<Meal>> favoriteMealsLiveData,
                        Context context,
                        Listener listener,
                        MealPlanRepository mealPlanRepository,
@@ -92,7 +98,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         Meal meal = meals.get(position);
         SessionManager sessionManager = new SessionManager(view.getContext());
         String savedUserId = sessionManager.getUserId();
-        favoriteMealsLiveData.observe((LifecycleOwner) context, favoriteMeals -> {
+        Disposable disposable =favoriteMealsLiveData.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(favoriteMeals -> {
             this.favoriteMeals = favoriteMeals;
             if (favoriteMeals.contains(meal)) {
                 holder.imgFav.setImageResource(R.drawable.checked_fav);
@@ -146,6 +153,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("TAG", "onClick: clicked"+holder.txtName.getText().toString());
                 mealPresenter.getMeal("meal", holder.txtName.getText().toString(),view);
             }
         });

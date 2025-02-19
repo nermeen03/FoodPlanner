@@ -1,5 +1,7 @@
 package com.example.foodplanner.data.repo;
 
+import android.util.Log;
+
 import com.example.foodplanner.data.remote.network.MealRemoteDataSourceInt;
 import com.example.foodplanner.data.remote.network.NetworkCallback;
 
@@ -18,6 +20,7 @@ public class RemoteMealRepository implements RemoteMealRepositoryInt{
     }
     @Override
     public void getMeal(NetworkCallback networkCallback, String type, String name) {
+        Log.d("TAG", "getMeal: hfhhg"+name);
         productRemoteDataSource.makeNetworkCall(networkCallback,type,name);
     }
 

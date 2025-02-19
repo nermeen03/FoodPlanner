@@ -33,6 +33,7 @@ public class MealPresenter implements NetworkCallback<Data> {
     }
 
     public void getMeal(String type, String name, View view) {
+        Log.d("TAG", "getMeal: hereclicj"+name);
         remoteMealRepositoryInt.getMeal(this, type, name);
         this.view = view;
     }

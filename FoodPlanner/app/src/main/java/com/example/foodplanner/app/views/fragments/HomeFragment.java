@@ -1,10 +1,11 @@
 package com.example.foodplanner.app.views.fragments;
 
+import static org.chromium.base.ThreadUtils.runOnUiThread;
+
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,13 +20,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodplanner.R;
-import com.example.foodplanner.app.navigation.NetworkChangeReceiver;
+import com.example.foodplanner.app.activity.MainActivity;
+import com.example.foodplanner.app.navigation.NetworkUtils;
 import com.example.foodplanner.app.register.FirebaseHelper;
+import com.example.foodplanner.app.views.fragments.MealFragment;
 import com.example.foodplanner.app.views.viewhelpers.AllMealsView;
 import com.example.foodplanner.app.views.viewhelpers.HomeViewModel;
 import com.example.foodplanner.data.local.MealsLocalDataSource;
@@ -44,13 +48,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listener {
+
     private HomeViewModel viewModel;
     private RecyclerView recommend_recyclerView;
     private RecyclerView meal_recyclerView;
-    CardAdapter mealsAdapter;
-    CardAdapter recommendAdapter;
-    HomePresenter presenter;
+    private CardAdapter mealsAdapter;
+    private CardAdapter recommendAdapter;
+    private HomePresenter presenter;
     private List<Meal> mealsList = new ArrayList<>();
     private List<Meal> recommendList = new ArrayList<>();
     private List<String> letters = new ArrayList<>();
@@ -59,11 +68,15 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
     private boolean isRecommend = false;
     private MealPlanRepository mealPlanRepository;
     private FavPresenter favPresenter;
-    private NetworkChangeReceiver networkChangeReceiver;
     private ScrollView scrollable;
     private ProgressBar recLoadingProgress;
     private ProgressBar mealLoadingProgress;
     private ImageView loading_image;
+
+    private Disposable disposableMeals;
+    private Disposable disposableRecommend;
+    private NetworkUtils networkUtils;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,29 +96,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         recLoadingProgress = view.findViewById(R.id.reco_loading_progress);
         mealLoadingProgress = view.findViewById(R.id.meal_loading_progress);
 
-        networkChangeReceiver = new NetworkChangeReceiver(scrollable,this);
-
-        // Check the network connection initially
-        if (!networkChangeReceiver.isNetworkAvailable(getContext())) {
-            scrollable.setVisibility(View.GONE);
-            Glide.with(this)
-                    .asGif()
-                    .load(R.drawable.wait)
-                    .into(loading_image);
-            loading_image.setVisibility(View.VISIBLE);
-        } else {
-            scrollable.setVisibility(View.VISIBLE);
-            loading_image.setVisibility(View.GONE);
-            recLoadingProgress.setVisibility(View.VISIBLE);
-            mealLoadingProgress.setVisibility(View.VISIBLE);
-        }
-
-        getActivity().registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-        for (char c = 'A'; c <= 'Z'; c++) {
-            letters.add(String.valueOf(c));
-        }
-
         recommend_recyclerView = view.findViewById(R.id.recommend_recyclerView);
         recommend_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -121,12 +111,12 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         FirebaseHelper firebaseHelper = new FirebaseHelper();
         String user = firebaseHelper.fetchUserDetails();
         Log.d("TAG", "onCreateView: "+user);
-        //MealPresenter mealPresenter = new MealPresenter(this, RemoteMealRepository.getInstance(MealRemoteDataSource.getInstance()));
         favPresenter = new FavPresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
 
         mealsAdapter = new CardAdapter(mealsList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
         recommendAdapter = new CardAdapter(recommendList,getContext(),this,repository,mealPresenter,view, favPresenter.getProducts(user));
         presenter = new HomePresenter(this, MealRepository.getInstance(MealsLocalDataSource.getInstance(getContext()), MealRemoteDataSource.getInstance()));
+
 
         recommend_recyclerView.setAdapter(recommendAdapter);
         meal_recyclerView.setAdapter(mealsAdapter);
@@ -135,30 +125,110 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
         meal_recyclerView.setVisibility(View.GONE);
 
         recyclerListener(meal_recyclerView);
-
         recyclerListener(recommend_recyclerView);
 
-        viewModel.getMealsList().observe(getViewLifecycleOwner(), meals -> {
-            mealsAdapter.updateData(meals);
+        networkUtils = new NetworkUtils(requireContext(), new NetworkUtils.NetworkStateListener() {
+            @Override
+            public void onNetworkAvailable() {
+                runOnUiThread(() -> {
+                    scrollable.setVisibility(View.VISIBLE);
+                    Disposable disposable = viewModel.getMealsList().subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(meals -> {
+                                if (!meals.isEmpty()) {
+                                    Log.d("TAG", "onNetworkAvailable: oooof"+meals);
+                                    meal_recyclerView.setVisibility(View.VISIBLE);
+                                    mealLoadingProgress.setVisibility(View.GONE);
+                                    mealsAdapter.updateData(meals);
+                                    mealsAdapter.notifyDataSetChanged();
+                                } else {
+                                    loading_image.setVisibility(View.GONE);
+                                    mealLoadingProgress.setVisibility(View.VISIBLE);
+                                    presenter.getProducts("letter", "a");
+                                    mealsAdapter.updateData(meals);
+                                    mealsAdapter.notifyDataSetChanged();
+                                }
+                            }, throwable -> {
+                                Log.e("TAG", "Error fetching countries", throwable);
+                            });
+                    Disposable disposable2 = viewModel.getRecommendList().subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(recommend -> {
+                                if (!recommend.isEmpty()) {
+                                    recommend_recyclerView.setVisibility(View.VISIBLE);
+                                    recLoadingProgress.setVisibility(View.GONE);
+                                    recommendAdapter.updateData(recommend);
+                                    recommendAdapter.notifyDataSetChanged();
+                                } else {
+                                    loading_image.setVisibility(View.GONE);
+                                    recLoadingProgress.setVisibility(View.VISIBLE);
+                                    presenter.getRecommend();
+                                    recommendAdapter.updateData(recommend);
+                                    recommendAdapter.notifyDataSetChanged();
+                                }
+                            }, throwable -> {
+                                Log.e("TAG", "Error fetching countries", throwable);
+                            });
+                });
+
+            }
+
+            @Override
+            public void onNetworkLost() {
+                if (mealsList.isEmpty()) {
+                    runOnUiThread(() -> {
+                        scrollable.setVisibility(View.GONE);
+                        Glide.with(requireContext())
+                                .asGif()
+                                .load(R.drawable.wait)
+                                .into(loading_image);
+                        loading_image.setVisibility(View.VISIBLE);
+                        Toast.makeText(getContext(), "No internet Connection", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
         });
-        viewModel.getRecommendList().observe(getViewLifecycleOwner(), recommends -> {
-            recommendAdapter.updateData(recommends);
-        });
-//        if (viewModel.getMealsList().getValue().isEmpty()&&networkChangeReceiver.isNetworkAvailable(getContext())) {
-//            presenter.getProducts("letter", "a");
-//            presenter.getRecommend();
-//
-//        }
+
+        networkUtils.registerNetworkCallback();
+
+
+        // Check the network connection initially
+        if (!networkUtils.isNetworkAvailable(requireContext())) {
+            scrollable.setVisibility(View.GONE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.wait)
+                    .into(loading_image);
+            loading_image.setVisibility(View.VISIBLE);
+        } else {
+            scrollable.setVisibility(View.VISIBLE);
+            if(!mealsList.isEmpty()){
+                refreshPage();
+            }else{
+                Log.d("TAG", "onCreateView: again");
+                loading_image.setVisibility(View.GONE);
+                recLoadingProgress.setVisibility(View.VISIBLE);
+                mealLoadingProgress.setVisibility(View.VISIBLE);
+                presenter.getProducts("letter", "a");
+                presenter.getRecommend();
+                mealsAdapter.notifyDataSetChanged();
+                mealsAdapter.notifyDataSetChanged();
+            }
+        }
+
+
+        for (char c = 'a'; c <= 'z'; c++) {
+            letters.add(String.valueOf(c));
+        }
+
 
         return view;
     }
-
 
     @Override
     public void showData(List<Meal> meals) {
         isLoading = false;
         isRecommend = false;
-        Log.i("TAG", "showData: here "+meals);
         if (meals.size() > 1) {
             if (meals != null && !meals.isEmpty()) {
                 viewModel.updateMealsList(meals);
@@ -171,15 +241,11 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                 recommend_recyclerView.setVisibility(View.VISIBLE);
                 recLoadingProgress.setVisibility(View.GONE);
             }
-            else{
-                Log.i("TAG", "showData: hahda"+meals);
-            }
         }
     }
 
     @Override
     public void showError(String error) {
-        //here the visibility
         Toast.makeText(getContext(), "Check your connection", Toast.LENGTH_SHORT).show();
     }
 
@@ -212,7 +278,6 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
                 else if(!isRecommend && (visibleItemCount + firstItemPosition) >= totalItemCount && firstItemPosition >= 0) {
                     Log.i("TAG", "onScrolled: reco");
                     loadRecommend();
-
                 }
             }
         });
@@ -226,11 +291,13 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
             currentLetterIndex++;
         }
     }
+
     private void loadRecommend() {
         isRecommend = true;
         Log.i("TAG", "loadRecommend: ");
         presenter.getRecommend();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -244,21 +311,35 @@ public class HomeFragment extends Fragment implements AllMealsView<Meal>, Listen
             }
         }
     }
+
     @Override
     public void onStop() {
         super.onStop();
-        if (networkChangeReceiver != null) {
-            getActivity().unregisterReceiver(networkChangeReceiver);
+        if (networkUtils != null) {
+            networkUtils.unregisterNetworkCallback();
+        }
+        // Dispose of RxJava disposables when the fragment is stopped
+        if (disposableMeals != null && !disposableMeals.isDisposed()) {
+            disposableMeals.dispose();
+        }
+        if (disposableRecommend != null && !disposableRecommend.isDisposed()) {
+            disposableRecommend.dispose();
         }
     }
+
     public void refreshPage() {
-        if (networkChangeReceiver.isNetworkAvailable(getContext())) {
-            presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
-            presenter.getRecommend();
+        if (networkUtils.isNetworkAvailable(requireContext())) {
+            if(mealsList.isEmpty()) {
+                presenter.getProducts("letter", "a");  // Adjust as needed to re-fetch the data
+                presenter.getRecommend();
+            }else{
+                mealsAdapter.notifyDataSetChanged();
+                recommendAdapter.notifyDataSetChanged();
+                isLoading = false;
+                isRecommend = false;
+            }
         } else {
             Toast.makeText(getContext(), "No network connection", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }
